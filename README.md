@@ -5,6 +5,9 @@ Project Breach
 
 Team Members
   Faris Suleiman
+  
   Saharsh Buddhe
+  
   Ridwan Shakoor
+  
   Dylan Nguyen
