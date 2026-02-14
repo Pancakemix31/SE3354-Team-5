@@ -3,7 +3,8 @@ Software Engineering Project for SE3354
 
 Project Breach
 
-Team Members
+Team Members:
+  
   Faris Suleiman
   
   Saharsh Buddhe
