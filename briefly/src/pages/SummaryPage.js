@@ -81,6 +81,8 @@ function SummaryPage() {
           <p className="summary-result__text">{summary}</p>
         </section>
       )}
+
+      <p className="page-use-case-credit">Faris Suleiman</p>
     </div>
   );
 }

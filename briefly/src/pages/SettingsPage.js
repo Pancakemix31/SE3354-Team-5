@@ -162,6 +162,8 @@ function SettingsPage() {
           </p>
         </section>
       </div>
+
+      <p className="page-use-case-credit">Faris Suleiman</p>
     </div>
   );
 }
