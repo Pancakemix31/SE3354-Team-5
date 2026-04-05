@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Briefly — Article &amp; AI Summary | Faris Suleiman</title>
+  <!-- Name: Faris Suleiman | USE CASE 1: View AI Summary (course demo) -->
+  <link rel="stylesheet" href="shared.css" />
+  <link rel="stylesheet" href="use-case-1.css" />
+</head>
+<body class="site">
+  <a class="skip-link" href="#main-content">Skip to article</a>
+
+  <header class="site-topbar">
+    <div class="site-topbar__inner">
+      <a class="site-brand" href="index.html">
+        <span class="site-brand__mark" aria-hidden="true">B</span>
+        <span class="site-brand__text">
+          Briefly Wire
+          <span>SE3354 · Demo news product</span>
+        </span>
+      </a>
+      <nav class="topbar-nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="use-case-1.html" class="is-active" aria-current="page">Read &amp; summarize</a>
+        <a href="use-case-2.html">Notifications</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <div class="page-hero__inner main-inner--narrow">
+      <p class="use-case-eyebrow">
+        <span class="use-case-badge">Use case 1</span>
+        <span class="use-case-label">View AI Summary</span>
+      </p>
+      <h1>Article reader with instant summary</h1>
+      <p class="hero-lead">
+        This page mimics a lightweight news experience: read a short story, then request a simulated AI summary below the text.
+      </p>
+      <p class="grader-note" role="note">
+        <strong>For grading:</strong> This screen implements <strong>Use Case 1 — View AI Summary</strong>.
+        The blue button triggers a mock async summary (no API); a short loading state appears, then the summary shows in the highlighted panel.
+      </p>
+    </div>
+  </div>
+
+  <main class="site-main" id="main-content">
+    <div class="main-inner main-inner--narrow">
+      <!-- ===================== USE CASE 1: View AI Summary ===================== -->
+      <article class="article-shell" id="use-case-1" aria-labelledby="uc1-heading">
+        <div class="article-shell__media" aria-hidden="true"></div>
+        <div class="article-shell__content">
+          <p class="article-meta">Technology · Sustainability · 3 min read</p>
+          <h2 class="article-title" id="uc1-heading">Data centers trial smarter cooling to cut energy use</h2>
+          <p class="article-body" id="sampleArticle">
+            University researchers announced a new approach to reducing energy use in
+            data centers by optimizing cooling systems with machine learning. Early trials
+            showed a measurable drop in power consumption during peak hours. The team
+            plans wider testing next year and hopes the method can be adopted by cloud
+            providers to support more sustainable computing.
+          </p>
+          <div class="article-actions">
+            <button type="button" class="btn-primary" id="summaryBtn" aria-expanded="false" aria-controls="summaryOutput">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn-text">View AI Summary</span>
+            </button>
+            <span class="article-actions__hint">Simulated intelligence — no external API</span>
+          </div>
+          <div class="summary-box" id="summaryOutput" role="region" aria-live="polite">
+            <div class="summary-box__head">
+              <span class="summary-label">AI summary</span>
+              <span class="summary-pill">Generated</span>
+            </div>
+            <p class="summary-text" id="summaryText"></p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p><strong>Name:</strong> Faris Suleiman · <strong>Course:</strong> Software Engineering (SE3354)</p>
+      <p>Plain HTML, CSS, and JavaScript — Use Case 1 demo</p>
+    </div>
+  </footer>
+
+  <script src="use-case-1.js"></script>
+</body>
+</html>

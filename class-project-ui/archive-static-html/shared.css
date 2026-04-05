@@ -1,0 +1,305 @@
+/*
+ * Shared layout, navigation, and theme (blue + white) for the class project site.
+ * USE CASE pages link this file plus their own use-case-*.css.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --primary: #0d47a1;
+  --primary-bright: #1565c0;
+  --primary-hover: #0a3a85;
+  --accent: #e3f2fd;
+  --accent-soft: #f0f7ff;
+  --accent-strong: #90caf9;
+  --text: #0d2137;
+  --text-secondary: #37474f;
+  --muted: #546e7a;
+  --border: #bbdefb;
+  --shadow-sm: 0 1px 3px rgba(13, 71, 161, 0.08);
+  --shadow-md: 0 8px 30px rgba(13, 71, 161, 0.1);
+  --shadow-card: 0 4px 24px rgba(13, 71, 161, 0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --max-content: 760px;
+  --topbar-h: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body.site {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #ffffff;
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* ----- Top navigation (professional site header) ----- */
+.site-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--topbar-h);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.site-topbar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.site-brand__mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary-bright), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.site-brand__text span {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.topbar-nav a {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.topbar-nav a:hover {
+  background: var(--accent);
+  color: var(--primary);
+}
+
+.topbar-nav a.is-active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.topbar-nav a.is-active:hover {
+  background: var(--primary-hover);
+  color: #fff;
+}
+
+/* ----- Hero / page title band ----- */
+.page-hero {
+  background: linear-gradient(180deg, var(--accent-soft) 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.page-hero__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.25rem 1.25rem 2rem;
+}
+
+.use-case-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.use-case-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--primary);
+  border-radius: 6px;
+}
+
+.use-case-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.page-hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.page-hero .hero-lead {
+  margin: 0;
+  max-width: 42rem;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Grader-facing note (clear for TA) */
+.grader-note {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--primary-bright);
+  box-shadow: var(--shadow-sm);
+}
+
+.grader-note strong {
+  color: var(--primary);
+}
+
+/* ----- Main column ----- */
+.site-main {
+  flex: 1;
+}
+
+.main-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.main-inner--narrow {
+  max-width: var(--max-content);
+}
+
+/* Legacy card (still used inside pages) */
+section.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  margin-bottom: 0;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+section.card .card__body {
+  padding: 1.5rem 1.5rem 1.75rem;
+}
+
+section.card h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+  padding: 1rem 1.5rem;
+  background: linear-gradient(180deg, var(--accent-soft) 0%, #fff 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ----- Footer ----- */
+.site-footer {
+  margin-top: auto;
+  padding: 1.5rem 1.25rem;
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--accent) 100%);
+  border-top: 1px solid var(--border);
+}
+
+.site-footer__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.site-footer strong {
+  color: var(--primary);
+}
+
+/* ----- Motion ----- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  z-index: 200;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* Inline code (grader notes, hub cards) */
+code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+  font-size: 0.9em;
+}

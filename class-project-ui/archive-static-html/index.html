@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Briefly Wire — SE3354 UI Project | Faris Suleiman</title>
+  <!-- Hub: links to separate use case pages (collaboration-friendly) -->
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .hub-hero h1 {
+      max-width: 20ch;
+    }
+    .hub-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 0.5rem;
+    }
+    .hub-card {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .hub-card:hover {
+      border-color: var(--primary-bright);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .hub-card__badge {
+      align-self: flex-start;
+      margin-bottom: 0.75rem;
+    }
+    .hub-card h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .hub-card p {
+      margin: 0 0 1rem;
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .hub-card__cta {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary-bright);
+    }
+    .hub-card:hover .hub-card__cta {
+      text-decoration: underline;
+    }
+    .hub-meta {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body class="site">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-topbar">
+    <div class="site-topbar__inner">
+      <a class="site-brand" href="index.html">
+        <span class="site-brand__mark" aria-hidden="true">B</span>
+        <span class="site-brand__text">
+          Briefly Wire
+          <span>SE3354 · Team UI demonstration</span>
+        </span>
+      </a>
+      <nav class="topbar-nav" aria-label="Primary">
+        <a href="index.html" class="is-active" aria-current="page">Home</a>
+        <a href="use-case-1.html">Read &amp; summarize</a>
+        <a href="use-case-2.html">Notifications</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero hub-hero">
+    <div class="page-hero__inner">
+      <p class="use-case-eyebrow">
+        <span class="use-case-badge" style="background: var(--primary-bright);">Project hub</span>
+        <span class="use-case-label">Software Engineering class deliverable</span>
+      </p>
+      <h1>Two interactive experiences, one cohesive product</h1>
+      <p class="hero-lead">
+        <strong>Name: Faris Suleiman.</strong> Below are separate pages for each required use case—built with HTML, CSS, and JavaScript only—styled like a small professional news product called Briefly Wire.
+      </p>
+    </div>
+  </div>
+
+  <main class="site-main" id="main-content">
+    <div class="main-inner">
+      <div class="hub-cards">
+        <a class="hub-card" href="use-case-1.html">
+          <span class="use-case-badge hub-card__badge">Use case 1</span>
+          <h2>View AI Summary</h2>
+          <p>Read a sample article and generate a simulated AI summary with a short loading state. Open <code style="font-size:0.85em;">use-case-1.*</code> files to collaborate.</p>
+          <span class="hub-card__cta">Open article experience →</span>
+        </a>
+        <a class="hub-card" href="use-case-2.html">
+          <span class="use-case-badge hub-card__badge">Use case 2</span>
+          <h2>Modify notification settings</h2>
+          <p>Toggle alerts, pick Hourly or Daily frequency, see confirmations, and persist choices with localStorage. Open <code style="font-size:0.85em;">use-case-2.*</code> files.</p>
+          <span class="hub-card__cta">Open settings →</span>
+        </a>
+      </div>
+      <p class="hub-meta">
+        Blue and white theme · Rounded surfaces · Soft shadows · No framework required
+      </p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p><strong>Name:</strong> Faris Suleiman · <strong>Course:</strong> Software Engineering (SE3354)</p>
+      <p>Plain HTML, CSS, and JavaScript</p>
+    </div>
+  </footer>
+</body>
+</html>

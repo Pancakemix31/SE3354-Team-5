@@ -1,0 +1,21 @@
+.logo-img {
+  display: block;
+  object-fit: contain;
+}
+
+/* Subtle loading shimmer — use with .logo-img--pulse on AI Summary */
+.logo-img--pulse {
+  animation: logo-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes logo-shimmer {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.88;
+    filter: brightness(1.12);
+  }
+}

@@ -1,0 +1,70 @@
+.hub-hero h1 {
+  max-width: 24ch;
+}
+
+.hub-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.hub-card:hover {
+  border-color: var(--primary-bright);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.hub-card__badge {
+  align-self: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.hub-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.hub-card p {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.hub-card__cta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-bright);
+}
+
+.hub-card:hover .hub-card__cta {
+  text-decoration: underline;
+}
+
+.hub-meta {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.hub-badge--alt {
+  background: var(--primary-bright) !important;
+}

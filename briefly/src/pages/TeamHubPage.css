@@ -1,0 +1,161 @@
+.team-hub {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3.5rem;
+}
+
+.team-hub__hero {
+  margin-bottom: 2rem;
+  max-width: 44rem;
+}
+
+.team-hub__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.team-hub__hero h1 {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.team-hub__lead {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.team-hub__lead code {
+  font-size: 0.85em;
+  padding: 0.1rem 0.35rem;
+  background: var(--color-accent);
+  border-radius: 6px;
+}
+
+.team-hub__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.team-hub__card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.team-hub__card--live:hover {
+  border-color: var(--color-accent-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.team-hub__card--placeholder {
+  background: linear-gradient(180deg, var(--color-accent) 0%, #fff 100%);
+}
+
+.team-hub__badge {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  margin-bottom: 0.65rem;
+}
+
+.team-hub__badge--live {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.team-hub__card h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+
+.team-hub__card p {
+  margin: 0 0 0.75rem;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.team-hub__card code {
+  font-size: 0.8em;
+}
+
+.team-hub__cta {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.team-hub__steps {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.team-hub__steps h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.team-hub__steps ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+.team-hub__steps code {
+  font-size: 0.88em;
+  padding: 0.1rem 0.35rem;
+  background: var(--color-accent);
+  border-radius: 4px;
+  color: var(--color-primary-dark);
+}
+
+.team-hub__snippet h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.team-hub__pre {
+  margin: 0;
+  padding: 1rem 1.15rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: var(--radius-sm);
+  border: 1px solid #1e293b;
+}

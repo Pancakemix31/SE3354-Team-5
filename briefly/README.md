@@ -2,6 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Briefly structure
+
+- **Logo:** `public/briefly-logo.png` — also used as the favicon.
+- **Auth (mock):** `src/context/AuthContext.js` — localStorage users + session; replace with API calls for production.
+- **Layouts:** `src/layouts/MainLayout.js` (nav + pages), auth pages use `src/pages/auth/AuthLayout.js`.
+- **Team extensions:** `src/pages/TeamHubPage.js` + `src/features/featureRoutes.js` — add routes in `App.js` and optional registry entries.
+
 ## Available Scripts
 
 In the project directory, you can run:
