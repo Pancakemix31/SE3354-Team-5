@@ -11,9 +11,11 @@ import {
   countPendingForEmail,
   enqueuePendingSave,
   getSavedArticles,
+  insertReadingListRecord,
   processPendingQueue,
+  READING_LIST_SYNC_EVENT,
   removeSavedArticle,
-  saveArticleForUser,
+  syncReadingList,
 } from '../lib/savedArticlesStorage';
 
 const SavedArticlesContext = createContext(null);
@@ -25,6 +27,7 @@ export function SavedArticlesProvider({ children }) {
     typeof navigator !== 'undefined' ? navigator.onLine : true
   );
   const [version, setVersion] = useState(0);
+  const bump = useCallback(() => setVersion((v) => v + 1), []);
 
   const email = user?.email ?? null;
 
@@ -45,7 +48,7 @@ export function SavedArticlesProvider({ children }) {
       setOnline(true);
       if (email) {
         processPendingQueue(email);
-        setVersion((v) => v + 1);
+        bump();
       }
     };
     const onOffline = () => setOnline(false);
@@ -55,9 +58,25 @@ export function SavedArticlesProvider({ children }) {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
     };
-  }, [email]);
+  }, [email, bump]);
 
-  const bump = useCallback(() => setVersion((v) => v + 1), []);
+  useEffect(() => {
+    const onStorage = (event) => {
+      if (event.key && !String(event.key).includes('briefly_saved_articles')) return;
+      bump();
+    };
+    const onSync = (event) => {
+      if (!event.detail?.email || event.detail.email === email) {
+        bump();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    window.addEventListener(READING_LIST_SYNC_EVENT, onSync);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener(READING_LIST_SYNC_EVENT, onSync);
+    };
+  }, [email, bump]);
 
   /**
    * @returns {{ ok: true } | { duplicate: true } | { needAuth: true } | { queued: true } | { error: string }}
@@ -78,15 +97,16 @@ export function SavedArticlesProvider({ children }) {
         bump();
         return { queued: true };
       }
-      const result = saveArticleForUser(email, article);
+      const result = insertReadingListRecord(email, article);
       if (result.duplicate) {
         return { duplicate: true };
       }
       if (result.ok) {
+        syncReadingList(email);
         bump();
         return { ok: true };
       }
-      return { error: 'Could not save article.' };
+      return { error: result.error || 'Could not save article.' };
     },
     [isAuthenticated, email, bump]
   );
@@ -95,6 +115,7 @@ export function SavedArticlesProvider({ children }) {
     (articleId) => {
       if (!email) return;
       removeSavedArticle(email, articleId);
+      syncReadingList(email);
       bump();
     },
     [email, bump]

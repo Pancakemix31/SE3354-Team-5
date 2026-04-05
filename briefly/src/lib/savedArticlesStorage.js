@@ -1,5 +1,9 @@
 const SAVED_KEY = 'briefly_saved_articles_v1';
 const PENDING_KEY = 'briefly_saved_pending_v1';
+const SYNC_KEY = 'briefly_saved_articles_sync_v1';
+
+export const FORCE_INSERT_ERROR_KEY = 'briefly_force_insert_error';
+export const READING_LIST_SYNC_EVENT = 'briefly-reading-list-sync';
 
 function readJson(key, fallback) {
   try {
@@ -19,12 +23,31 @@ function writeJson(key, value) {
   }
 }
 
-/**
- * @returns {Record<string, Array<{id: string, title: string, excerpt: string, category?: string, savedAt: string}>>}
- */
 function readAllSaved() {
   const data = readJson(SAVED_KEY, {});
   return data && typeof data === 'object' ? data : {};
+}
+
+function emitSync(email) {
+  const detail = { email, at: Date.now() };
+  writeJson(SYNC_KEY, detail);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(READING_LIST_SYNC_EVENT, { detail }));
+  }
+}
+
+function buildSavedEntry(article) {
+  return {
+    id: article.id,
+    title: article.title,
+    excerpt: article.excerpt,
+    source: article.source || 'Unknown source',
+    content: Array.isArray(article.content) ? article.content : [],
+    readTime: article.readTime || '',
+    url: article.url || '',
+    ...(article.category ? { category: article.category } : {}),
+    savedAt: new Date().toISOString(),
+  };
 }
 
 export function getSavedArticles(email) {
@@ -34,27 +57,30 @@ export function getSavedArticles(email) {
   return Array.isArray(list) ? list : [];
 }
 
-/**
- * @returns {{ ok: true } | { ok: false, duplicate: true }}
- */
-export function saveArticleForUser(email, article) {
+export function insertReadingListRecord(email, article) {
   if (!email || !article?.id) return { ok: false, duplicate: false };
+  if (readJson(FORCE_INSERT_ERROR_KEY, false)) {
+    return { ok: false, error: 'Unable to save this article right now.' };
+  }
   const all = readAllSaved();
   const list = Array.isArray(all[email]) ? [...all[email]] : [];
   if (list.some((a) => a.id === article.id)) {
     return { ok: false, duplicate: true };
   }
-  const entry = {
-    id: article.id,
-    title: article.title,
-    excerpt: article.excerpt,
-    ...(article.category ? { category: article.category } : {}),
-    savedAt: new Date().toISOString(),
-  };
-  list.unshift(entry);
+  list.unshift(buildSavedEntry(article));
   all[email] = list;
   writeJson(SAVED_KEY, all);
+  emitSync(email);
   return { ok: true };
+}
+
+export function syncReadingList(email) {
+  if (!email) return;
+  emitSync(email);
+}
+
+export function saveArticleForUser(email, article) {
+  return insertReadingListRecord(email, article);
 }
 
 export function removeSavedArticle(email, articleId) {
@@ -64,6 +90,7 @@ export function removeSavedArticle(email, articleId) {
   all[email] = list.filter((a) => a.id !== articleId);
   if (all[email].length === 0) delete all[email];
   writeJson(SAVED_KEY, all);
+  emitSync(email);
 }
 
 export function clearSavedArticlesForUser(email) {
@@ -71,6 +98,7 @@ export function clearSavedArticlesForUser(email) {
   const all = readAllSaved();
   delete all[email];
   writeJson(SAVED_KEY, all);
+  emitSync(email);
 }
 
 export function getPendingQueue() {
@@ -106,9 +134,12 @@ export function processPendingQueue(email) {
     else rest.push(item);
   }
   for (const item of mine) {
-    saveArticleForUser(item.email, item.article);
+    insertReadingListRecord(item.email, item.article);
   }
   writeJson(PENDING_KEY, rest);
+  if (mine.length > 0) {
+    emitSync(email);
+  }
 }
 
 export function countPendingForEmail(email) {

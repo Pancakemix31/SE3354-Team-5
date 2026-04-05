@@ -140,6 +140,10 @@
   min-width: min(100%, 280px);
 }
 
+.saved-card__body--link {
+  text-decoration: none;
+}
+
 .saved-card__meta {
   margin: 0 0 0.35rem;
   font-size: 0.7rem;
@@ -170,6 +174,27 @@
   color: var(--color-text-muted);
 }
 
+.saved-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.saved-card__open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.5rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  text-decoration: none;
+  background: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
 .saved-card__remove {
   flex-shrink: 0;
   padding: 0.5rem 1rem;
@@ -186,6 +211,27 @@
 
 .saved-card__remove:hover {
   background: #fef2f2;
+}
+
+.saved-page__toast {
+  position: sticky;
+  bottom: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-primary-dark);
+  font-weight: 700;
+  background: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.saved-page__toast--visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .page-use-case-credit {

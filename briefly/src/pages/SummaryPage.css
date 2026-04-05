@@ -64,6 +64,13 @@
   line-height: 1.65;
 }
 
+.article-card__source {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
 .summary-actions {
   display: flex;
   flex-wrap: wrap;
@@ -102,6 +109,20 @@
   background: var(--color-accent);
   border-color: var(--color-border);
   color: var(--color-text-muted);
+}
+
+.summary-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  color: var(--color-primary-dark);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
 .summary-toast {

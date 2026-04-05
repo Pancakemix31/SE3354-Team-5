@@ -4,10 +4,11 @@ import { AuthProvider } from './context/AuthContext';
 import { SavedArticlesProvider } from './context/SavedArticlesContext';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
-import SummaryPage from './pages/SummaryPage';
+import ReadingListSummaryPage from './pages/ReadingListSummaryPage';
 import SettingsPage from './pages/SettingsPage';
-import SavedArticlesPage from './pages/SavedArticlesPage';
+import ReadingListPage from './pages/ReadingListPage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
+import ArticlePage from './pages/ArticlePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import './App.css';
@@ -33,8 +34,9 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/summary" element={<SummaryPage />} />
-                <Route path="/saved" element={<SavedArticlesPage />} />
+                <Route path="/summary" element={<ReadingListSummaryPage />} />
+                <Route path="/saved" element={<ReadingListPage />} />
+                <Route path="/articles/:articleId" element={<ArticlePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/account/delete" element={<DeleteAccountPage />} />
               </Route>
