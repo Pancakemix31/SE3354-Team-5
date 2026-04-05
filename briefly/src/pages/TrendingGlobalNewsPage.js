@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { fetchTrending } from '../lib/trendingNews';
 import './TrendingGlobalNewsPage.css';
 
+// This page is used to adding trending global news section.
+// Created by Saharsh
 function TrendingGlobalNewsPage() {
   const [loading, setLoading] = useState(true);
   const [stories, setStories] = useState([]);

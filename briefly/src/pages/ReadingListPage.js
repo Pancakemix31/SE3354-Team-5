@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { useSavedArticles } from '../context/SavedArticlesContext';
 import './SavedArticlesPage.css';
 
+// This page is used to add saved articles.
+// Created by Saharsh
 function ReadingListPage() {
   const { isAuthenticated } = useAuth();
   const { savedArticles, removeArticle, pendingCount, isOnline } = useSavedArticles();
