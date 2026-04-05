@@ -7,7 +7,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - **Logo:** `public/briefly-logo.png` — also used as the favicon.
 - **Auth (mock):** `src/context/AuthContext.js` — localStorage users + session; replace with API calls for production.
 - **Layouts:** `src/layouts/MainLayout.js` (nav + pages), auth pages use `src/pages/auth/AuthLayout.js`.
-- **Team extensions:** `src/pages/TeamHubPage.js` + `src/features/featureRoutes.js` — add routes in `App.js` and optional registry entries.
+- **Optional feature registry:** `src/features/featureRoutes.js` — metadata list; live routes are registered in `App.js`.
 
 ## Available Scripts
 

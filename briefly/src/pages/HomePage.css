@@ -161,10 +161,6 @@
   box-shadow: 0 16px 48px rgba(37, 99, 235, 0.12);
 }
 
-.home__card--accent {
-  background: linear-gradient(160deg, var(--color-accent) 0%, #fff 65%);
-}
-
 .home__card h2 {
   margin: 0 0 0.5rem;
   font-size: 1.12rem;

@@ -1,0 +1,31 @@
+.auth-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--bg-app);
+}
+
+.auth-layout__brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+}
+
+.auth-layout__brand:hover {
+  color: var(--accent);
+}
+
+.auth-layout__card {
+  width: 100%;
+  max-width: 400px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}

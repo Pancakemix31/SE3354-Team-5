@@ -38,7 +38,7 @@ function RegisterPage() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Join Briefly to save progress on this browser. Teammates can hook real auth later."
+      subtitle="Join Briefly to save your preferences and reading progress on this browser."
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
         {error ? (

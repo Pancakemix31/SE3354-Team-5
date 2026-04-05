@@ -1,0 +1,115 @@
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app);
+  color: var(--text-primary);
+}
+
+.main-layout__header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+.main-layout__header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-layout__brand {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.main-layout__brand:hover {
+  color: var(--accent);
+}
+
+.main-layout__tagline {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.main-layout__user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.main-layout__email {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.main-layout__logout {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.main-layout__logout:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.main-layout__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .main-layout__body {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .main-layout__sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-subtle);
+    padding: 1rem;
+    background: var(--bg-elevated);
+  }
+
+  .main-layout__main {
+    flex: 1;
+    padding: 1.25rem;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .main-layout__sidebar {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0.75rem 1rem;
+    background: var(--bg-elevated);
+  }
+
+  .main-layout__main {
+    padding: 1rem;
+  }
+}

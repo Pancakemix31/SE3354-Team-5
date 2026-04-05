@@ -43,14 +43,6 @@ function Navbar() {
           >
             Settings
           </NavLink>
-          <NavLink
-            to="/team"
-            className={({ isActive }) =>
-              `navbar__link${isActive ? ' navbar__link--active' : ''}`
-            }
-          >
-            Team hub
-          </NavLink>
         </nav>
         <div className="navbar__auth">
           {isAuthenticated ? (

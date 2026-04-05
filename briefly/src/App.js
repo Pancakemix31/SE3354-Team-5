@@ -5,7 +5,6 @@ import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
 import SummaryPage from './pages/SummaryPage';
 import SettingsPage from './pages/SettingsPage';
-import TeamHubPage from './pages/TeamHubPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import './App.css';
@@ -14,7 +13,6 @@ import './App.css';
  * Routes:
  * - /login, /register — auth (no main chrome)
  * - Everything under MainLayout — Navbar + feature pages
- * Teammates: add sibling routes next to Summary / Settings inside MainLayout.
  */
 function App() {
   return (
@@ -33,7 +31,6 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/summary" element={<SummaryPage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/team" element={<TeamHubPage />} />
             </Route>
           </Routes>
         </div>
