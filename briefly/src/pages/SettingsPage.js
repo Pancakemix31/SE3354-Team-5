@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
 import './SettingsPage.css';
 
 const STORAGE_ENABLED = 'briefly_notifications_enabled';
@@ -91,10 +92,38 @@ function SettingsPage() {
       <div className="settings-layout">
         <aside className="settings-sidebar" aria-label="Sections">
           <h2>Account</h2>
-          <ul>
-            <li className="is-active">Notifications</li>
-            <li>Profile</li>
-            <li>Security</li>
+          <ul className="settings-sidebar__nav">
+            <li>
+              <NavLink
+                to="/settings"
+                end
+                className={({ isActive }) =>
+                  `settings-sidebar__link${isActive ? ' is-active' : ''}`
+                }
+              >
+                Notifications
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/saved"
+                className={({ isActive }) =>
+                  `settings-sidebar__link${isActive ? ' is-active' : ''}`
+                }
+              >
+                Saved articles
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/account/delete"
+                className={({ isActive }) =>
+                  `settings-sidebar__link${isActive ? ' is-active' : ''}`
+                }
+              >
+                Delete account
+              </NavLink>
+            </li>
           </ul>
         </aside>
 

@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { clearPendingForEmail, clearSavedArticlesForUser } from '../lib/savedArticlesStorage';
 
 /**
  * Mock authentication — persists users + session in localStorage.
@@ -77,8 +78,11 @@ export function AuthProvider({ children }) {
     const normalized = email.trim().toLowerCase();
     const users = readUsers();
     const found = users.find((u) => u.email === normalized);
-    if (!found || found.password !== password) {
-      return { ok: false, error: 'Invalid email or password.' };
+    if (!found) {
+      return { ok: false, error: 'No account found with this email.' };
+    }
+    if (found.password !== password) {
+      return { ok: false, error: 'Invalid password.' };
     }
     localStorage.setItem(SESSION_KEY, JSON.stringify({ email: found.email }));
     setUser({ email: found.email, name: found.name });
@@ -90,6 +94,24 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const deleteAccount = useCallback((password) => {
+    if (!user) {
+      return { ok: false, error: 'You must be signed in to delete your account.' };
+    }
+    const users = readUsers();
+    const found = users.find((u) => u.email === user.email);
+    if (!found || found.password !== password) {
+      return { ok: false, error: 'Invalid password. Account deletion cancelled.' };
+    }
+    const next = users.filter((u) => u.email !== user.email);
+    writeUsers(next);
+    clearSavedArticlesForUser(user.email);
+    clearPendingForEmail(user.email);
+    localStorage.removeItem(SESSION_KEY);
+    setUser(null);
+    return { ok: true };
+  }, [user]);
+
   const value = useMemo(
     () => ({
       user,
@@ -97,8 +119,9 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      deleteAccount,
     }),
-    [user, login, register, logout]
+    [user, login, register, logout, deleteAccount]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,5 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
+import { useAuth } from '../context/AuthContext';
+import { useSavedArticles } from '../context/SavedArticlesContext';
+import { FEATURED_ARTICLE } from '../data/featuredArticle';
 import './SummaryPage.css';
 
 /** Simulated latency so loading state feels realistic (no network call). */
@@ -15,9 +19,65 @@ const MOCK_SUMMARY =
  * AI Summary flow: article + generate button + loading + animated summary card.
  */
 function SummaryPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { saveArticle, isSaved } = useSavedArticles();
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [showCard, setShowCard] = useState(false);
+  const [toast, setToast] = useState('');
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimer = useRef(null);
+
+  useEffect(() => {
+    return () => window.clearTimeout(toastTimer.current);
+  }, []);
+
+  const showToast = useCallback((message) => {
+    window.clearTimeout(toastTimer.current);
+    setToast(message);
+    setToastVisible(true);
+    toastTimer.current = window.setTimeout(() => {
+      setToastVisible(false);
+    }, 3200);
+  }, []);
+
+  const onSaveArticle = useCallback(() => {
+    if (!isAuthenticated) {
+      navigate('/login', {
+        state: {
+          from: { pathname: '/summary' },
+          message: 'Sign in to save articles to your list.',
+        },
+      });
+      return;
+    }
+    const result = saveArticle(FEATURED_ARTICLE);
+    if (result.needAuth) {
+      navigate('/login', {
+        state: {
+          from: { pathname: '/summary' },
+          message: 'Sign in to save articles to your list.',
+        },
+      });
+      return;
+    }
+    if (result.duplicate) {
+      showToast('This article is already in your saved list.');
+      return;
+    }
+    if (result.queued) {
+      showToast('You appear to be offline. Save is queued and will finish when you are back online.');
+      return;
+    }
+    if (result.ok) {
+      showToast('Article saved to your list.');
+      return;
+    }
+    if (result.error) {
+      showToast(result.error);
+    }
+  }, [isAuthenticated, navigate, saveArticle, showToast]);
 
   const runSummary = useCallback(() => {
     setLoading(true);
@@ -55,6 +115,15 @@ function SummaryPage() {
           <div className="summary-actions">
             <button
               type="button"
+              className="btn-secondary"
+              onClick={onSaveArticle}
+              disabled={isSaved(FEATURED_ARTICLE.id)}
+              aria-pressed={isSaved(FEATURED_ARTICLE.id)}
+            >
+              {isSaved(FEATURED_ARTICLE.id) ? 'Saved' : 'Save article'}
+            </button>
+            <button
+              type="button"
               className="btn-primary"
               onClick={runSummary}
               disabled={loading}
@@ -69,6 +138,13 @@ function SummaryPage() {
               </div>
             )}
           </div>
+          <div
+            className={`summary-toast${toastVisible ? ' summary-toast--visible' : ''}`}
+            role="status"
+            aria-live="polite"
+          >
+            {toast}
+          </div>
         </div>
       </article>
 
@@ -82,7 +158,9 @@ function SummaryPage() {
         </section>
       )}
 
-      <p className="page-use-case-credit">Faris Suleiman</p>
+      <p className="page-use-case-credit">
+        AI Summary · Faris Suleiman · Save article · Ridwan
+      </p>
     </div>
   );
 }

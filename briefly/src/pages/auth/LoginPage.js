@@ -11,6 +11,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
+  const infoMessage = location.state?.message || '';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,6 +34,11 @@ function LoginPage() {
       subtitle="Sign in to sync preferences across sessions on this device."
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
+        {infoMessage ? (
+          <p className="auth-info" role="status">
+            {infoMessage}
+          </p>
+        ) : null}
         {error ? (
           <p className="auth-error" role="alert">
             {error}

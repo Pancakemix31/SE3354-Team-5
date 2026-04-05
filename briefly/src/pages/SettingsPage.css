@@ -58,14 +58,25 @@
   list-style: none;
 }
 
-.settings-sidebar li {
+.settings-sidebar__nav li {
+  padding: 0.15rem 0;
+}
+
+.settings-sidebar__link {
+  display: block;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-text-muted);
+  text-decoration: none;
   padding: 0.35rem 0;
+  border-radius: 6px;
 }
 
-.settings-sidebar li.is-active {
+.settings-sidebar__link:hover {
+  color: var(--color-primary);
+}
+
+.settings-sidebar__link.is-active {
   color: var(--color-primary);
 }
 

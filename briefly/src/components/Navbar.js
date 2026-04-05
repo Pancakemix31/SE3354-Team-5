@@ -36,6 +36,14 @@ function Navbar() {
             AI Summary
           </NavLink>
           <NavLink
+            to="/saved"
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+          >
+            Saved
+          </NavLink>
+          <NavLink
             to="/settings"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`

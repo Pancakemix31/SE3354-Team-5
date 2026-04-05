@@ -34,7 +34,7 @@ function HomePage() {
       <section className="home__section">
         <h2 className="home__section-title">What you can do</h2>
         <p className="home__section-desc">
-          Jump into the main flows—summaries and notification preferences are ready to use.
+          Summaries, saved articles, and notification preferences—ready to use when you are signed in.
         </p>
         <div className="home__grid">
           <Link className="home__card" to="/summary">
@@ -44,6 +44,13 @@ function HomePage() {
               loading experience.
             </p>
             <span className="home__card-cta">Open AI Summary →</span>
+          </Link>
+          <Link className="home__card" to="/saved">
+            <h2>Saved articles</h2>
+            <p>
+              Save stories from the AI Summary page and revisit them anytime from your personal list.
+            </p>
+            <span className="home__card-cta">View saved →</span>
           </Link>
           <Link className="home__card" to="/settings">
             <h2>Notification settings</h2>
