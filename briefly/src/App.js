@@ -3,12 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { SavedArticlesProvider } from './context/SavedArticlesContext';
 import MainLayout from './layouts/MainLayout';
-import HomePage from './pages/HomePage';
+import LandingPage from './pages/LandingPage';
 import ReadingListSummaryPage from './pages/ReadingListSummaryPage';
 import SettingsPage from './pages/SettingsPage';
 import ReadingListPage from './pages/ReadingListPage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
 import ArticlePage from './pages/ArticlePage';
+import TrendingGlobalNewsPage from './pages/TrendingGlobalNewsPage';
+import TrendingStoryPage from './pages/TrendingStoryPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import './App.css';
@@ -33,7 +35,9 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route element={<MainLayout />}>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/trending" element={<TrendingGlobalNewsPage />} />
+                <Route path="/trending/:storyId" element={<TrendingStoryPage />} />
                 <Route path="/summary" element={<ReadingListSummaryPage />} />
                 <Route path="/saved" element={<ReadingListPage />} />
                 <Route path="/articles/:articleId" element={<ArticlePage />} />

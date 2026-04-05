@@ -42,7 +42,13 @@ function readSessionEmail() {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const email = readSessionEmail();
+    if (!email) return null;
+    const users = readUsers();
+    const found = users.find((candidate) => candidate.email === email);
+    return found ? { email: found.email, name: found.name } : null;
+  });
 
   // Restore session on first load (if the user still exists locally).
   useEffect(() => {

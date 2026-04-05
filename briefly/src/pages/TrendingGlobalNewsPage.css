@@ -1,0 +1,156 @@
+.trending-page,
+.trending-story {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.trending-page__intro {
+  margin-bottom: 1.5rem;
+}
+
+.trending-page__intro h1,
+.trending-story__header h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+}
+
+.trending-page__intro p,
+.trending-story__summary {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.trending-page__state,
+.trending-page__banner {
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.trending-page__banner {
+  margin-bottom: 1rem;
+  color: #92400e;
+  background: #fffbeb;
+  border-color: #fcd34d;
+}
+
+.trending-page__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trending-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.trending-card__link {
+  display: flex;
+  gap: 1rem;
+  padding: 1.15rem 1.2rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.trending-card__rank {
+  min-width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  background: var(--color-accent);
+  border-radius: 999px;
+}
+
+.trending-card__body h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.trending-card__meta,
+.trending-story__meta {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.trending-card__summary {
+  margin: 0 0 0.65rem;
+  color: var(--color-text-muted);
+}
+
+.trending-card__engagement {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.trending-story__header {
+  margin-bottom: 1.25rem;
+}
+
+.trending-story__content {
+  padding: 1.35rem;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.trending-story__content p {
+  margin: 0 0 1rem;
+}
+
+.trending-story__content p:last-child {
+  margin-bottom: 0;
+}
+
+.trending-story__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.trending-page__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.65rem 1rem;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.trending-story__analytics {
+  padding: 0.55rem 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  background: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 640px) {
+  .trending-card__link {
+    flex-direction: column;
+  }
+}

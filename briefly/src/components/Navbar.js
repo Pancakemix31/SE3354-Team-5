@@ -28,6 +28,14 @@ function Navbar() {
             Home
           </NavLink>
           <NavLink
+            to="/trending"
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+          >
+            Trending
+          </NavLink>
+          <NavLink
             to="/summary"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`

@@ -2,7 +2,9 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 import { FEATURED_ARTICLE } from './data/articles';
+import { getTrackedStoryViews } from './lib/analytics';
 import { FORCE_INSERT_ERROR_KEY } from './lib/savedArticlesStorage';
+import { FORCE_TRENDING_FAILURE_KEY } from './lib/trendingNews';
 
 const USERS_KEY = 'briefly_users';
 const SESSION_KEY = 'briefly_session';
@@ -158,4 +160,89 @@ test('TC-06 shows an error and does not add the article when insert fails', asyn
 
   expect(await screen.findByText(/unable to save this article right now/i)).toBeInTheDocument();
   expect(window.localStorage.getItem(SAVED_KEY)).toBeNull();
+});
+
+test('Trending TC-01 loads the trending list with headline, source, and region', async () => {
+  seedAuthenticatedUser();
+  setRoute('/trending');
+  render(<App />);
+
+  expect(screen.getByText(/loading trending stories/i)).toBeInTheDocument();
+  expect(
+    await screen.findByRole('heading', {
+      name: /south asian logistics routes rerouted after severe flooding/i,
+    })
+  ).toBeInTheDocument();
+  expect(screen.getByText(/associated press \| asia/i)).toBeInTheDocument();
+});
+
+test('Trending TC-02 sorts stories by most-read and most-shared engagement', async () => {
+  seedAuthenticatedUser();
+  setRoute('/trending');
+  render(<App />);
+
+  await screen.findByRole('heading', {
+    name: /south asian logistics routes rerouted after severe flooding/i,
+  });
+
+  const headings = screen.getAllByRole('heading', { level: 2 });
+  expect(headings[0]).toHaveTextContent(/south asian logistics routes rerouted after severe flooding/i);
+  expect(headings[1]).toHaveTextContent(/europe grid operators lean on solar storage during record demand/i);
+});
+
+test('Trending TC-03 opens a story detail view with summary, source, and publication time', async () => {
+  seedAuthenticatedUser();
+  setRoute('/trending');
+  render(<App />);
+
+  await userEvent.click(
+    await screen.findByRole('link', {
+      name: /south asian logistics routes rerouted after severe flooding/i,
+    })
+  );
+
+  expect(
+    await screen.findByRole('heading', {
+      name: /south asian logistics routes rerouted after severe flooding/i,
+    })
+  ).toBeInTheDocument();
+  expect(screen.getByText(/regional rail and shipping corridors are being rerouted/i)).toBeInTheDocument();
+  expect(screen.getByText(/associated press \| asia \|/i)).toBeInTheDocument();
+});
+
+test('Trending TC-04 tracks analytics when a story is opened', async () => {
+  seedAuthenticatedUser();
+  setRoute('/trending/trend-india-flood-logistics');
+  render(<App />);
+
+  expect(
+    await screen.findByText(/trackstoryview\(\) confirmed/i)
+  ).toBeInTheDocument();
+  expect(getTrackedStoryViews()[0]).toMatchObject({
+    storyId: 'trend-india-flood-logistics',
+  });
+});
+
+test('Trending TC-05 degrades gracefully when the news API fails', async () => {
+  seedAuthenticatedUser();
+  window.localStorage.setItem(FORCE_TRENDING_FAILURE_KEY, JSON.stringify(true));
+  setRoute('/trending');
+  render(<App />);
+
+  expect(
+    await screen.findByText(/primary source unavailable\. showing backup trending coverage/i)
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: /global health agencies coordinate backup supply routes/i })
+  ).toBeInTheDocument();
+});
+
+test('Trending opens for logged-out users without redirecting to login', async () => {
+  setRoute('/trending');
+  render(<App />);
+
+  expect(
+    await screen.findByRole('heading', { name: /trending global news/i })
+  ).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: /welcome back/i })).not.toBeInTheDocument();
 });
