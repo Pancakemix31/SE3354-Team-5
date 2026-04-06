@@ -127,6 +127,27 @@ function SummaryPage() {
           <h2 id="article-title" className="article-card__title">
             {selectedArticle.title}
           </h2>
+          <div className="article-rating">
+            <span className="article-rating__label">Rate this article:</span>
+            <div className="article-rating__stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  className={`star ${ratings[selectedArticle.id] >= star ? 'star--filled' : ''}`}
+                  onClick={() => handleRating(selectedArticle.id, star)}
+                  aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+            {ratings[selectedArticle.id] && (
+              <span className="article-rating__value">
+                {ratings[selectedArticle.id]} star{ratings[selectedArticle.id] !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
           <p className="article-card__text">
             {selectedArticle.content}
           </p>
