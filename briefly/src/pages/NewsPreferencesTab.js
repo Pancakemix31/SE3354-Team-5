@@ -4,6 +4,7 @@ const STORAGE_NEWS_PREFERENCES = 'briefly_news_preferences';
 const DEFAULT_CATEGORIES = ['Finance', 'Political', 'Global'];
 
 /**
+ * This page is created by Keshav for News Preferences
  * Read string from localStorage; returns null if missing or unreadable.
  */
 function readStorage(key) {

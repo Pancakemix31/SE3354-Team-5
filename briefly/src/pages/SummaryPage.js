@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import { useSavedArticles } from '../context/SavedArticlesContext';
 import { SAMPLE_ARTICLES } from '../data/sampleArticles';
 import './SummaryPage.css';
-
 /** Simulated latency so loading state feels realistic (no network call). */
 const SUMMARY_DELAY_MS = 900;
 
@@ -127,7 +126,9 @@ function SummaryPage() {
           <h2 id="article-title" className="article-card__title">
             {selectedArticle.title}
           </h2>
+          {/* Rating component worked on by Keshav */}
           <div className="article-rating">
+            
             <span className="article-rating__label">Rate this article:</span>
             <div className="article-rating__stars">
               {[1, 2, 3, 4, 5].map((star) => (
