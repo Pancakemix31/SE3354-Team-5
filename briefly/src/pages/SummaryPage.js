@@ -3,31 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import { useAuth } from '../context/AuthContext';
 import { useSavedArticles } from '../context/SavedArticlesContext';
-import { FEATURED_ARTICLE } from '../data/featuredArticle';
+import { SAMPLE_ARTICLES } from '../data/sampleArticles';
 import './SummaryPage.css';
 
 /** Simulated latency so loading state feels realistic (no network call). */
 const SUMMARY_DELAY_MS = 900;
 
-/** Fixed mock output — replace with an API response in production. */
-const MOCK_SUMMARY =
-  'Researchers are piloting machine-learning cooling controls in data centers to cut ' +
-  'power use during peak periods. Early results are positive, with broader trials planned ' +
-  'before wider adoption by cloud operators.';
-
 /**
- * AI Summary flow: article + generate button + loading + animated summary card.
+ * AI Summary flow: article selection + article + generate button + loading + animated summary card.
  */
 function SummaryPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { saveArticle, isSaved } = useSavedArticles();
+  const [selectedArticleIndex, setSelectedArticleIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState('');
   const [showCard, setShowCard] = useState(false);
   const [toast, setToast] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
+  const [ratings, setRatings] = useState(() => {
+    const saved = localStorage.getItem('articleRatings');
+    return saved ? JSON.parse(saved) : {};
+  });
   const toastTimer = useRef(null);
+
+  const selectedArticle = SAMPLE_ARTICLES[selectedArticleIndex];
 
   useEffect(() => {
     return () => window.clearTimeout(toastTimer.current);
@@ -52,7 +53,7 @@ function SummaryPage() {
       });
       return;
     }
-    const result = saveArticle(FEATURED_ARTICLE);
+    const result = saveArticle(selectedArticle);
     if (result.needAuth) {
       navigate('/login', {
         state: {
@@ -77,7 +78,7 @@ function SummaryPage() {
     if (result.error) {
       showToast(result.error);
     }
-  }, [isAuthenticated, navigate, saveArticle, showToast]);
+  }, [isAuthenticated, navigate, saveArticle, showToast, selectedArticle]);
 
   const runSummary = useCallback(() => {
     setLoading(true);
@@ -85,42 +86,80 @@ function SummaryPage() {
     setSummary('');
 
     window.setTimeout(() => {
-      setSummary(MOCK_SUMMARY);
+      setSummary(selectedArticle.summary);
       setLoading(false);
       setShowCard(true);
     }, SUMMARY_DELAY_MS);
-  }, []);
+  }, [selectedArticle]);
+
+  const handleRating = useCallback((articleId, rating) => {
+    const newRatings = { ...ratings, [articleId]: rating };
+    setRatings(newRatings);
+    localStorage.setItem('articleRatings', JSON.stringify(newRatings));
+    showToast(`Rated ${rating} star${rating !== 1 ? 's' : ''}!`);
+  }, [ratings, showToast]);
 
   return (
     <div className="summary-page">
       <header className="summary-page__intro">
-        <h1>Featured story</h1>
-        <p>Generate a concise digest without leaving the page.</p>
+        <h1>AI Summary</h1>
+        <p>Choose a sample article and generate a concise digest without leaving the page.</p>
+        <div className="article-selector">
+          <label htmlFor="article-select">Select an article:</label>
+          <select
+            id="article-select"
+            value={selectedArticleIndex}
+            onChange={(e) => setSelectedArticleIndex(parseInt(e.target.value))}
+          >
+            {SAMPLE_ARTICLES.map((article, index) => (
+              <option key={article.id} value={index}>
+                {article.title}
+              </option>
+            ))}
+          </select>
+        </div>
       </header>
 
       <article className="article-card" aria-labelledby="article-title">
         <div className="article-card__hero" aria-hidden="true" />
         <div className="article-card__body">
-          <p className="article-card__meta">Technology · Sustainability</p>
+          <p className="article-card__meta">{selectedArticle.category}</p>
           <h2 id="article-title" className="article-card__title">
-            Data centers trial smarter cooling to trim energy use
+            {selectedArticle.title}
           </h2>
+          <div className="article-rating">
+            <span className="article-rating__label">Rate this article:</span>
+            <div className="article-rating__stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  className={`star ${ratings[selectedArticle.id] >= star ? 'star--filled' : ''}`}
+                  onClick={() => handleRating(selectedArticle.id, star)}
+                  aria-label={`Rate ${star} star${star !== 1 ? 's' : ''}`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+            {ratings[selectedArticle.id] && (
+              <span className="article-rating__value">
+                {ratings[selectedArticle.id]} star{ratings[selectedArticle.id] !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
           <p className="article-card__text">
-            University researchers announced a new approach to reducing energy use in data
-            centers by optimizing cooling systems with machine learning. Early trials showed
-            a measurable drop in power consumption during peak hours. The team plans wider
-            testing next year and hopes the method can be adopted by cloud providers to
-            support more sustainable computing.
+            {selectedArticle.content}
           </p>
           <div className="summary-actions">
             <button
               type="button"
               className="btn-secondary"
               onClick={onSaveArticle}
-              disabled={isSaved(FEATURED_ARTICLE.id)}
-              aria-pressed={isSaved(FEATURED_ARTICLE.id)}
+              disabled={isSaved(selectedArticle.id)}
+              aria-pressed={isSaved(selectedArticle.id)}
             >
-              {isSaved(FEATURED_ARTICLE.id) ? 'Saved' : 'Save article'}
+              {isSaved(selectedArticle.id) ? 'Saved' : 'Save article'}
             </button>
             <button
               type="button"
