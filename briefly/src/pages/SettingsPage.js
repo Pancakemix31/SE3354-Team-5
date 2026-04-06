@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
+import NewsPreferencesTab from './NewsPreferencesTab';
 import './SettingsPage.css';
 
 const STORAGE_ENABLED = 'briefly_notifications_enabled';
@@ -46,9 +47,10 @@ function loadInitialSettings() {
 }
 
 /**
- * Notification preferences: toggle, frequency select, persistence, inline confirmation.
+ * Settings page with tabs for Notifications and News Preferences.
  */
 function SettingsPage() {
+  const [activeTab, setActiveTab] = useState('notifications');
   const [{ enabled, frequency }, setState] = useState(loadInitialSettings);
   const [toast, setToast] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
@@ -94,15 +96,22 @@ function SettingsPage() {
           <h2>Account</h2>
           <ul className="settings-sidebar__nav">
             <li>
-              <NavLink
-                to="/settings"
-                end
-                className={({ isActive }) =>
-                  `settings-sidebar__link${isActive ? ' is-active' : ''}`
-                }
+              <button
+                type="button"
+                className={`settings-sidebar__link${activeTab === 'notifications' ? ' is-active' : ''}`}
+                onClick={() => setActiveTab('notifications')}
               >
                 Notifications
-              </NavLink>
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className={`settings-sidebar__link${activeTab === 'preferences' ? ' is-active' : ''}`}
+                onClick={() => setActiveTab('preferences')}
+              >
+                News preferences
+              </button>
             </li>
             <li>
               <NavLink
@@ -127,56 +136,66 @@ function SettingsPage() {
           </ul>
         </aside>
 
-        <section className="settings-panel" aria-labelledby="notif-heading">
-          <h2 id="notif-heading">Notifications</h2>
+        <section className="settings-panel" aria-labelledby={`${activeTab}-heading`}>
+          <h2 id={`${activeTab}-heading`}>
+            {activeTab === 'notifications' ? 'Notifications' : 'News preferences'}
+          </h2>
           <p className="settings-panel__desc">
-            Turn alerts on or off and choose how often we bundle updates.
+            {activeTab === 'notifications'
+              ? 'Turn alerts on or off and choose how often we bundle updates.'
+              : 'Choose which kinds of news matter most, and add custom topics you want to follow.'}
           </p>
 
-          <div className="setting-row">
-            <div>
-              <span className="setting-row__label" id="toggle-label">
-                Push notifications
-              </span>
-              <p className="setting-row__help">
-                When enabled, we can surface timely nudges in supported environments.
-              </p>
-            </div>
-            <div className="toggle">
-              <span className="toggle__state" aria-live="polite">
-                {enabled ? 'ON' : 'OFF'}
-              </span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={enabled}
-                  onChange={onToggle}
-                  aria-labelledby="toggle-label"
-                />
-                <span className="switch__slider" />
-              </label>
-            </div>
-          </div>
+          {activeTab === 'notifications' ? (
+            <>
+              <div className="setting-row">
+                <div>
+                  <span className="setting-row__label" id="toggle-label">
+                    Push notifications
+                  </span>
+                  <p className="setting-row__help">
+                    When enabled, we can surface timely nudges in supported environments.
+                  </p>
+                </div>
+                <div className="toggle">
+                  <span className="toggle__state" aria-live="polite">
+                    {enabled ? 'ON' : 'OFF'}
+                  </span>
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      checked={enabled}
+                      onChange={onToggle}
+                      aria-labelledby="toggle-label"
+                    />
+                    <span className="switch__slider" />
+                  </label>
+                </div>
+              </div>
 
-          <div className="setting-row setting-row--stack">
-            <div>
-              <label className="setting-row__label" htmlFor="frequency">
-                Digest frequency
-              </label>
-              <p className="setting-row__help">
-                How often we summarize activity into a single update.
-              </p>
-            </div>
-            <select
-              id="frequency"
-              className="frequency-select"
-              value={frequency}
-              onChange={onFrequency}
-            >
-              <option value="hourly">Hourly</option>
-              <option value="daily">Daily</option>
-            </select>
-          </div>
+              <div className="setting-row setting-row--stack">
+                <div>
+                  <label className="setting-row__label" htmlFor="frequency">
+                    Digest frequency
+                  </label>
+                  <p className="setting-row__help">
+                    How often we summarize activity into a single update.
+                  </p>
+                </div>
+                <select
+                  id="frequency"
+                  className="frequency-select"
+                  value={frequency}
+                  onChange={onFrequency}
+                >
+                  <option value="hourly">Hourly</option>
+                  <option value="daily">Daily</option>
+                </select>
+              </div>
+            </>
+          ) : (
+            <NewsPreferencesTab showToast={showToast} />
+          )}
 
           <div
             className={`settings-toast${toastVisible ? ' settings-toast--visible' : ''}`}
@@ -192,7 +211,9 @@ function SettingsPage() {
         </section>
       </div>
 
-      <p className="page-use-case-credit">Faris Suleiman</p>
+      <p className="page-use-case-credit">
+        {activeTab === 'notifications' ? 'Faris Suleiman' : 'Keshav'}
+      </p>
     </div>
   );
 }
