@@ -11,6 +11,8 @@ const DEFAULT_FREQUENCY = 'daily';
 /**
  * Read string from localStorage; returns null if missing or unreadable.
  */
+
+//This page was created by Faris Suleiman
 function readStorage(key) {
   try {
     return window.localStorage.getItem(key);

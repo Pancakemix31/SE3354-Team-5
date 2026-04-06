@@ -6,6 +6,7 @@ import { useSavedArticles } from '../context/SavedArticlesContext';
 import { FEATURED_ARTICLE } from '../data/featuredArticle';
 import './SummaryPage.css';
 
+// This page is created by Faris Suleiman
 /** Simulated latency so loading state feels realistic (no network call). */
 const SUMMARY_DELAY_MS = 900;
 
