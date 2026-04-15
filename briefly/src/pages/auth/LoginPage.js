@@ -14,12 +14,13 @@ function LoginPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const result = login(email, password);
+    const result = await login(email, password);
     if (result.ok) {
       navigate(from, { replace: true });
     } else {
@@ -29,8 +30,8 @@ function LoginPage() {
 
   return (
     <AuthLayout
-      title="Welcome back"
-      subtitle="Sign in to sync preferences across sessions on this device."
+      title="Welcome Back"
+      subtitle="Enter your credentials to access your account"
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
         {error ? (
@@ -48,27 +49,45 @@ function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder="johndoe@example.com"
           />
         </div>
         <div className="auth-field">
           <label htmlFor="login-password">Password</label>
-          <input
-            id="login-password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="auth-password-wrap">
+            <input
+              id="login-password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="auth-password-toggle"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c-5.25 0-9.27 3.73-10.8 6.95a1.2 1.2 0 0 0 0 1.1C2.73 16.27 6.75 20 12 20s9.27-3.73 10.8-6.95a1.2 1.2 0 0 0 0-1.1C21.27 8.73 17.25 5 12 5Zm0 12c-3.96 0-7.18-2.75-8.53-5 1.35-2.25 4.57-5 8.53-5s7.18 2.75 8.53 5c-1.35 2.25-4.57 5-8.53 5Z" />
+                <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 4.4a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" />
+              </svg>
+            </button>
+          </div>
+          <div className="auth-row auth-row--end">
+            <button type="button" className="auth-forgot-link">
+              Forgot password?
+            </button>
+          </div>
         </div>
         <button type="submit" className="auth-submit">
-          Sign in
+          Sign In
         </button>
       </form>
       <p className="auth-switch">
-        New here? <Link to="/register">Create an account</Link>
+        Don't have an account? <Link to="/register">Sign up</Link>
       </p>
     </AuthLayout>
   );

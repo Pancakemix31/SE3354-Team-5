@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import SummaryPage from './pages/SummaryPage';
 import SettingsPage from './pages/SettingsPage';
 import TeamHubPage from './pages/TeamHubPage';
+import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import './App.css';
@@ -33,6 +34,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/summary" element={<SummaryPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/team" element={<TeamHubPage />} />
             </Route>
           </Routes>

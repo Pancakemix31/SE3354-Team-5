@@ -6,99 +6,130 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 
 /**
- * Mock authentication — persists users + session in localStorage.
- * Replace `login` / `register` with API calls when the backend is ready.
+ * Firebase auth provider for register/login/logout.
+ * Uses Firebase Auth for credentials and Firestore for profile/preferences.
  */
 const AuthContext = createContext(null);
 
-const USERS_KEY = 'briefly_users';
-const SESSION_KEY = 'briefly_session';
-
-function readUsers() {
-  try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+function mapFirebaseError(code) {
+  if (code === 'auth/email-already-in-use') {
+    return 'An account with this email already exists.';
   }
-}
-
-function writeUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-function readSessionEmail() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    return data?.email ?? null;
-  } catch {
-    return null;
+  if (
+    code === 'auth/invalid-credential' ||
+    code === 'auth/wrong-password' ||
+    code === 'auth/user-not-found'
+  ) {
+    // Security masking: avoid leaking which part was incorrect.
+    return 'Invalid credentials.';
   }
+  if (code === 'auth/weak-password') {
+    return 'Please choose a stronger password.';
+  }
+  if (code === 'permission-denied') {
+    return 'Missing Firestore permissions. Deploy firestore.rules or update rules in Firebase Console.';
+  }
+  return 'Something went wrong. Please try again.';
 }
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [preferences, setPreferences] = useState({ topics: [], regions: [] });
+  const [authReady, setAuthReady] = useState(false);
 
-  // Restore session on first load (if the user still exists locally).
+  // Restore Firebase session on first load.
   useEffect(() => {
-    const email = readSessionEmail();
-    if (!email) return;
-    const users = readUsers();
-    const found = users.find((u) => u.email === email);
-    if (found) {
-      setUser({ email: found.email, name: found.name });
-    } else {
-      localStorage.removeItem(SESSION_KEY);
-    }
-  }, []);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
+        setUser(null);
+        setPreferences({ topics: [], regions: [] });
+        setAuthReady(true);
+        return;
+      }
 
-  const register = useCallback((name, email, password) => {
-    const normalized = email.trim().toLowerCase();
-    const users = readUsers();
-    if (users.some((u) => u.email === normalized)) {
-      return { ok: false, error: 'An account with this email already exists.' };
-    }
-    users.push({
-      name: name.trim(),
-      email: normalized,
-      password,
+      let profile = {};
+      try {
+        const profileRef = doc(db, 'users', firebaseUser.uid);
+        const profileSnap = await getDoc(profileRef);
+        profile = profileSnap.exists() ? profileSnap.data() : {};
+      } catch {
+        // e.g. permission-denied until Firestore rules allow users/{uid}
+        profile = {};
+      }
+
+      setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        name: profile.name ?? firebaseUser.displayName ?? '',
+        emailVerified: firebaseUser.emailVerified,
+      });
+      setPreferences({
+        topics: profile.topics ?? [],
+        regions: profile.regions ?? [],
+      });
+      setAuthReady(true);
     });
-    writeUsers(users);
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ email: normalized }));
-    setUser({ email: normalized, name: name.trim() });
-    return { ok: true };
+
+    return () => unsubscribe();
   }, []);
 
-  const login = useCallback((email, password) => {
-    const normalized = email.trim().toLowerCase();
-    const users = readUsers();
-    const found = users.find((u) => u.email === normalized);
-    if (!found || found.password !== password) {
-      return { ok: false, error: 'Invalid email or password.' };
+  const register = useCallback(async (name, email, password) => {
+    try {
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim().toLowerCase(),
+        password
+      );
+      const firebaseUser = credential.user;
+      await setDoc(doc(db, 'users', firebaseUser.uid), {
+        name: name.trim(),
+        email: firebaseUser.email ?? email.trim().toLowerCase(),
+        topics: [],
+        regions: [],
+        createdAt: serverTimestamp(),
+      });
+      await sendEmailVerification(firebaseUser);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: mapFirebaseError(error?.code) };
     }
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ email: found.email }));
-    setUser({ email: found.email, name: found.name });
-    return { ok: true };
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(SESSION_KEY);
-    setUser(null);
+  const login = useCallback(async (email, password) => {
+    try {
+      await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error: mapFirebaseError(error?.code) };
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    await signOut(auth);
   }, []);
 
   const value = useMemo(
     () => ({
+      authReady,
       user,
+      preferences,
       isAuthenticated: Boolean(user),
       login,
       register,
       logout,
     }),
-    [user, login, register, logout]
+    [authReady, user, preferences, login, register, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

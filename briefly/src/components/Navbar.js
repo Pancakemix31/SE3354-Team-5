@@ -44,6 +44,14 @@ function Navbar() {
             Settings
           </NavLink>
           <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+          >
+            Profile
+          </NavLink>
+          <NavLink
             to="/team"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
