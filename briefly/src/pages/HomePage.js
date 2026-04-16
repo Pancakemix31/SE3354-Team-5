@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import './HomePage.css';
 
@@ -7,6 +8,8 @@ import './HomePage.css';
  * Marketing home — hero, logo, CTAs, shipped features, teammate entry point.
  */
 function HomePage() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <div className="home">
       <section className="home__hero-band">
@@ -21,12 +24,16 @@ function HomePage() {
             build on a clean React foundation your team can extend.
           </p>
           <div className="home__cta-row">
-            <Link className="home__btn home__btn--primary" to="/register">
-              Get started
-            </Link>
-            <Link className="home__btn home__btn--secondary" to="/login">
-              Sign in
-            </Link>
+            {!isAuthenticated ? (
+              <>
+                <Link className="home__btn home__btn--primary" to="/register">
+                  Get started
+                </Link>
+                <Link className="home__btn home__btn--secondary" to="/login">
+                  Sign in
+                </Link>
+              </>
+            ) : null}
             <Link className="home__btn home__btn--link" to="/team">
               Team hub →
             </Link>
