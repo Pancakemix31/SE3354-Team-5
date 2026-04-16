@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -53,6 +54,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [preferences, setPreferences] = useState({ topics: [], regions: [] });
   const [authReady, setAuthReady] = useState(false);
+  /** Bumped when register() applies profile state so stale onAuthStateChanged work is ignored. */
+  const profileSyncGenerationRef = useRef(0);
 
   // Restore Firebase session on first load.
   useEffect(() => {
@@ -64,6 +67,8 @@ export function AuthProvider({ children }) {
         return;
       }
 
+      const genAtStart = profileSyncGenerationRef.current;
+
       let profile = {};
       try {
         const profileRef = doc(db, 'users', firebaseUser.uid);
@@ -72,6 +77,12 @@ export function AuthProvider({ children }) {
       } catch {
         // e.g. permission-denied until Firestore rules allow users/{uid}
         profile = {};
+      }
+
+      // Registration can finish writing profile after this listener started; register() bumps
+      // profileSyncGenerationRef and sets user — skip so we don't overwrite with stale reads.
+      if (genAtStart !== profileSyncGenerationRef.current) {
+        return;
       }
 
       setUser({
@@ -114,6 +125,20 @@ export function AuthProvider({ children }) {
         createdAt: serverTimestamp(),
       });
       await sendEmailVerification(firebaseUser);
+
+      profileSyncGenerationRef.current += 1;
+      setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        name: trimmedName,
+        emailVerified: firebaseUser.emailVerified,
+      });
+      setPreferences({
+        topics: [],
+        regions: [],
+      });
+      setAuthReady(true);
+
       return { ok: true };
     } catch (error) {
       return { ok: false, error: mapFirebaseError(error?.code) };
