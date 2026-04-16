@@ -16,6 +16,11 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import {
+  PASSWORD_LENGTH_ERROR,
+  PASSWORD_WHITESPACE_ERROR,
+  passwordContainsWhitespace,
+} from '../utils/passwordPolicy';
 
 /**
  * Firebase auth provider for register/login/logout.
@@ -86,6 +91,12 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (name, email, password) => {
+    if (passwordContainsWhitespace(password)) {
+      return { ok: false, error: PASSWORD_WHITESPACE_ERROR };
+    }
+    if (password.length < 8) {
+      return { ok: false, error: PASSWORD_LENGTH_ERROR };
+    }
     try {
       const credential = await createUserWithEmailAndPassword(
         auth,
@@ -110,6 +121,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (email, password) => {
+    if (passwordContainsWhitespace(password)) {
+      return { ok: false, error: PASSWORD_WHITESPACE_ERROR };
+    }
     try {
       await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
       return { ok: true };

@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import {
+  PASSWORD_LENGTH_ERROR,
+  PASSWORD_WHITESPACE_ERROR,
+  passwordContainsWhitespace,
+} from '../../utils/passwordPolicy';
 import AuthLayout from './AuthLayout';
 
 /**
@@ -21,8 +26,12 @@ function RegisterPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (passwordContainsWhitespace(password) || passwordContainsWhitespace(confirm)) {
+      setError(PASSWORD_WHITESPACE_ERROR);
+      return;
+    }
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+      setError(PASSWORD_LENGTH_ERROR);
       return;
     }
     if (password !== confirm) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { PASSWORD_WHITESPACE_ERROR, passwordContainsWhitespace } from '../../utils/passwordPolicy';
 import AuthLayout from './AuthLayout';
 
 /**
@@ -20,6 +21,10 @@ function LoginPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (passwordContainsWhitespace(password)) {
+      setError(PASSWORD_WHITESPACE_ERROR);
+      return;
+    }
     const result = await login(email, password);
     if (result.ok) {
       navigate(from, { replace: true });
