@@ -9,7 +9,7 @@ import {
 import AuthLayout from './AuthLayout';
 
 /**
- * Registration — stores a mock user in localStorage. Not for production secrets.
+ * Registration: Firebase Auth + Firestore user profile (name, email, prefs).
  */
 function RegisterPage() {
   const { register } = useAuth();
@@ -26,6 +26,14 @@ function RegisterPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!name.trim()) {
+      setError('Please enter your full name.');
+      return;
+    }
+    if (!email.trim()) {
+      setError('Please enter your email.');
+      return;
+    }
     if (passwordContainsWhitespace(password) || passwordContainsWhitespace(confirm)) {
       setError(PASSWORD_WHITESPACE_ERROR);
       return;

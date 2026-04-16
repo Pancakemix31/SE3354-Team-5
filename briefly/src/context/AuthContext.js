@@ -33,6 +33,9 @@ function mapFirebaseError(code) {
   if (code === 'auth/email-already-in-use') {
     return 'An account with this email already exists.';
   }
+  if (code === 'auth/invalid-email') {
+    return 'Please enter a valid email address.';
+  }
   if (
     code === 'auth/invalid-credential' ||
     code === 'auth/wrong-password' ||
@@ -102,6 +105,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (name, email, password) => {
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedName) {
+      return { ok: false, error: 'Please enter your full name.' };
+    }
+    if (!trimmedEmail) {
+      return { ok: false, error: 'Please enter your email.' };
+    }
     if (passwordContainsWhitespace(password)) {
       return { ok: false, error: PASSWORD_WHITESPACE_ERROR };
     }
@@ -111,15 +122,14 @@ export function AuthProvider({ children }) {
     try {
       const credential = await createUserWithEmailAndPassword(
         auth,
-        email.trim().toLowerCase(),
+        trimmedEmail,
         password
       );
       const firebaseUser = credential.user;
-      const trimmedName = name.trim();
       await updateProfile(firebaseUser, { displayName: trimmedName });
       await setDoc(doc(db, 'users', firebaseUser.uid), {
         name: trimmedName,
-        email: firebaseUser.email ?? email.trim().toLowerCase(),
+        email: firebaseUser.email ?? trimmedEmail,
         topics: [],
         regions: [],
         createdAt: serverTimestamp(),
@@ -146,11 +156,48 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (email, password) => {
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail) {
+      return { ok: false, error: 'Please enter your email.' };
+    }
+    if (!password) {
+      return { ok: false, error: 'Please enter your password.' };
+    }
     if (passwordContainsWhitespace(password)) {
       return { ok: false, error: PASSWORD_WHITESPACE_ERROR };
     }
     try {
-      await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        trimmedEmail,
+        password
+      );
+      const firebaseUser = credential.user;
+
+      let profile = {};
+      try {
+        const profileRef = doc(db, 'users', firebaseUser.uid);
+        const profileSnap = await getDoc(profileRef);
+        profile = profileSnap.exists() ? profileSnap.data() : {};
+      } catch {
+        profile = {};
+      }
+
+      // Apply state before returning so navigated pages see a user immediately.
+      // onAuthStateChanged may still be behind; bump generation so stale listener work is dropped.
+      profileSyncGenerationRef.current += 1;
+      setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        name: profile.name ?? firebaseUser.displayName ?? '',
+        emailVerified: firebaseUser.emailVerified,
+      });
+      setPreferences({
+        topics: profile.topics ?? [],
+        regions: profile.regions ?? [],
+      });
+      setAuthReady(true);
+
       return { ok: true };
     } catch (error) {
       return { ok: false, error: mapFirebaseError(error?.code) };

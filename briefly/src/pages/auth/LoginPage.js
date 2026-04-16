@@ -5,13 +5,17 @@ import { PASSWORD_WHITESPACE_ERROR, passwordContainsWhitespace } from '../../uti
 import AuthLayout from './AuthLayout';
 
 /**
- * Sign-in form — wires to AuthContext (local mock). Swap for real API later.
+ * Sign-in: Firebase email/password via AuthContext.
  */
 function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
+  const rawFrom = location.state?.from?.pathname;
+  const from =
+    typeof rawFrom === 'string' && rawFrom.startsWith('/') && !rawFrom.startsWith('//')
+      ? rawFrom
+      : '/';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +25,14 @@ function LoginPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!email.trim()) {
+      setError('Please enter your email.');
+      return;
+    }
+    if (!password) {
+      setError('Please enter your password.');
+      return;
+    }
     if (passwordContainsWhitespace(password)) {
       setError(PASSWORD_WHITESPACE_ERROR);
       return;

@@ -29,7 +29,7 @@ function ProfilePage() {
     <div className="profile-page">
       <div className="profile-page__intro">
         <h1>Your profile</h1>
-        <p>Account details and news preferences stored with Briefly.</p>
+        <p>Account details and topic/region preferences from your Briefly profile.</p>
       </div>
 
       <div className="profile-card">
