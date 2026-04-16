@@ -63,9 +63,13 @@ function Navbar() {
         <div className="navbar__auth">
           {isAuthenticated ? (
             <>
-              <span className="navbar__user" title={user.email}>
-                Hi, {user.name?.split(' ')[0] || 'there'}
-              </span>
+              <Link
+                to="/profile"
+                className="navbar__user navbar__user-link"
+                title={user.email ? `${user.name || 'Account'} · ${user.email}` : undefined}
+              >
+                {user.name || user.email?.split('@')[0] || 'Account'}
+              </Link>
               <button type="button" className="navbar__btn navbar__btn--ghost" onClick={logout}>
                 Log out
               </button>

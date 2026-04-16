@@ -7,6 +7,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from 'firebase/auth';
 import { getDoc, setDoc } from 'firebase/firestore';
 
@@ -21,6 +22,7 @@ jest.mock('firebase/auth', () => ({
   sendEmailVerification: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   signOut: jest.fn(),
+  updateProfile: jest.fn(),
 }));
 
 jest.mock('firebase/firestore', () => ({
@@ -90,6 +92,7 @@ describe('AuthContext use cases', () => {
     createUserWithEmailAndPassword.mockResolvedValue({
       user: { uid: 'uid-123', email: 'john@example.com' },
     });
+    updateProfile.mockResolvedValue(undefined);
     setDoc.mockResolvedValue(undefined);
     sendEmailVerification.mockResolvedValue(undefined);
 
@@ -98,6 +101,10 @@ describe('AuthContext use cases', () => {
 
     await waitFor(() => expect(screen.getByText('register-ok')).toBeInTheDocument());
     expect(createUserWithEmailAndPassword).toHaveBeenCalled();
+    expect(updateProfile).toHaveBeenCalledWith(
+      { uid: 'uid-123', email: 'john@example.com' },
+      { displayName: 'John Doe' }
+    );
     expect(setDoc).toHaveBeenCalled();
     expect(sendEmailVerification).toHaveBeenCalled();
   });

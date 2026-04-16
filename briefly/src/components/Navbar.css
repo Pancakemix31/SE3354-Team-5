@@ -87,10 +87,23 @@
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--color-text-muted);
-  max-width: 120px;
+  max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.navbar__user-link {
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  margin: -0.35rem -0.5rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbar__user-link:hover {
+  background: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .navbar__btn {

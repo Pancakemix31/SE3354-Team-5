@@ -12,6 +12,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
@@ -92,8 +93,10 @@ export function AuthProvider({ children }) {
         password
       );
       const firebaseUser = credential.user;
+      const trimmedName = name.trim();
+      await updateProfile(firebaseUser, { displayName: trimmedName });
       await setDoc(doc(db, 'users', firebaseUser.uid), {
-        name: name.trim(),
+        name: trimmedName,
         email: firebaseUser.email ?? email.trim().toLowerCase(),
         topics: [],
         regions: [],
