@@ -13,7 +13,10 @@
   font-size: clamp(1.35rem, 3vw, 1.65rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--color-text);
+  background: linear-gradient(120deg, #0f172a 0%, var(--color-primary) 50%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .summary-page__intro p {
@@ -23,7 +26,7 @@
 }
 
 .article-card {
-  background: #fff;
+  background: var(--surface-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
@@ -32,7 +35,7 @@
 
 .article-card__hero {
   height: 160px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, #fff 70%);
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 45%, #ffffff 100%);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -80,7 +83,7 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--color-primary-dark);
-  background: #fff;
+  background: #ffffff;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -89,7 +92,7 @@
 
 .btn-secondary:hover:not(:disabled) {
   background: var(--color-accent);
-  border-color: var(--color-accent-hover);
+  border-color: #93c5fd;
 }
 
 .btn-secondary:active:not(:disabled) {
@@ -182,7 +185,7 @@
 .summary-result {
   margin-top: 1.5rem;
   padding: 1.15rem 1.2rem;
-  background: linear-gradient(145deg, var(--color-accent) 0%, #fff 60%);
+  background: linear-gradient(145deg, #eff6ff 0%, #ffffff 60%);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
@@ -221,9 +224,9 @@
   font-weight: 600;
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
-  background: #fff;
-  color: var(--color-primary);
-  border: 1px solid var(--color-border);
+  background: var(--color-accent);
+  color: var(--color-primary-dark);
+  border: 1px solid #bfdbfe;
 }
 
 .summary-result__text {
@@ -233,12 +236,3 @@
   color: var(--color-text);
 }
 
-.page-use-case-credit {
-  margin: 2rem auto 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-}

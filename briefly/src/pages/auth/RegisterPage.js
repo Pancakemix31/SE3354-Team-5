@@ -29,7 +29,7 @@ function RegisterPage() {
     }
     const result = register(name, email, password);
     if (result.ok) {
-      navigate('/', { replace: true });
+      navigate('/trending', { replace: true });
     } else {
       setError(result.error);
     }
@@ -38,7 +38,7 @@ function RegisterPage() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Join Briefly to save your preferences and reading progress on this browser."
+      subtitle="One account unlocks AI summaries, global trending, and preference-aware digests."
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
         {error ? (

@@ -23,7 +23,7 @@
 
 .saved-page__gate {
   padding: 1.75rem 1.5rem;
-  background: var(--color-accent);
+  background: var(--surface-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   text-align: center;
@@ -69,8 +69,8 @@
 
 .saved-page__btn--secondary {
   color: var(--color-primary-dark);
-  background: #fff;
-  border-color: var(--color-border);
+  background: #ffffff;
+  border: 2px solid var(--color-border);
 }
 
 .saved-page__banner {
@@ -78,9 +78,9 @@
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   line-height: 1.45;
-  color: var(--color-primary-dark);
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
+  color: #fde68a;
+  background: rgba(120, 53, 15, 0.25);
+  border: 1px solid rgba(251, 191, 36, 0.35);
   border-radius: var(--radius-sm);
 }
 
@@ -93,7 +93,7 @@
 .saved-page__empty {
   padding: 2rem 1.25rem;
   text-align: center;
-  background: #fff;
+  background: #f8fafc;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text-muted);
@@ -129,7 +129,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 1.25rem 1.35rem;
-  background: #fff;
+  background: var(--surface-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -176,24 +176,14 @@
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #b91c1c;
-  background: #fff;
-  border: 1px solid #fecaca;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.35);
+  border: 1px solid rgba(248, 113, 113, 0.35);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .saved-card__remove:hover {
-  background: #fef2f2;
-}
-
-.page-use-case-credit {
-  margin: 2rem auto 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
+  background: rgba(127, 29, 29, 0.5);
 }

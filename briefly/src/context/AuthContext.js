@@ -41,6 +41,12 @@ function readSessionEmail() {
   }
 }
 
+function stripPassword(record) {
+  if (!record) return null;
+  const { password: _p, ...rest } = record;
+  return rest;
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
@@ -51,7 +57,7 @@ export function AuthProvider({ children }) {
     const users = readUsers();
     const found = users.find((u) => u.email === email);
     if (found) {
-      setUser({ email: found.email, name: found.name });
+      setUser(stripPassword(found));
     } else {
       localStorage.removeItem(SESSION_KEY);
     }
@@ -67,10 +73,20 @@ export function AuthProvider({ children }) {
       name: name.trim(),
       email: normalized,
       password,
+      digestFrequency: 'daily',
+      summaryDepth: 'concise',
     });
     writeUsers(users);
     localStorage.setItem(SESSION_KEY, JSON.stringify({ email: normalized }));
-    setUser({ email: normalized, name: name.trim() });
+    setUser(
+      stripPassword({
+        name: name.trim(),
+        email: normalized,
+        password,
+        digestFrequency: 'daily',
+        summaryDepth: 'concise',
+      })
+    );
     return { ok: true };
   }, []);
 
@@ -85,9 +101,37 @@ export function AuthProvider({ children }) {
       return { ok: false, error: 'Invalid password.' };
     }
     localStorage.setItem(SESSION_KEY, JSON.stringify({ email: found.email }));
-    setUser({ email: found.email, name: found.name });
+    setUser(stripPassword(found));
     return { ok: true };
   }, []);
+
+  const updateProfile = useCallback(
+    (fields) => {
+      if (!user) {
+        return { ok: false, error: 'You must be signed in.' };
+      }
+      const users = readUsers();
+      const i = users.findIndex((u) => u.email === user.email);
+      if (i === -1) {
+        return { ok: false, error: 'Account not found.' };
+      }
+      const next = { ...users[i] };
+      if (typeof fields.name === 'string' && fields.name.trim()) {
+        next.name = fields.name.trim();
+      }
+      if (fields.digestFrequency === 'hourly' || fields.digestFrequency === 'daily') {
+        next.digestFrequency = fields.digestFrequency;
+      }
+      if (fields.summaryDepth === 'concise' || fields.summaryDepth === 'deep') {
+        next.summaryDepth = fields.summaryDepth;
+      }
+      users[i] = next;
+      writeUsers(users);
+      setUser(stripPassword(next));
+      return { ok: true };
+    },
+    [user]
+  );
 
   const logout = useCallback(() => {
     localStorage.removeItem(SESSION_KEY);
@@ -120,8 +164,9 @@ export function AuthProvider({ children }) {
       register,
       logout,
       deleteAccount,
+      updateProfile,
     }),
-    [user, login, register, logout, deleteAccount]
+    [user, login, register, logout, deleteAccount, updateProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

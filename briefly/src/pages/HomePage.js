@@ -1,64 +1,54 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import './HomePage.css';
 
-/**
- * Marketing home — hero, logo, CTAs, and feature highlights.
- */
+/** Public landing — matches app-wide light theme; larger logo, modern hero. */
 function HomePage() {
+  const { isAuthenticated } = useAuth();
+
+  if (isAuthenticated) {
+    return <Navigate to="/trending" replace />;
+  }
+
   return (
-    <div className="home">
-      <section className="home__hero-band">
-        <div className="home__hero-inner">
-          <div className="home__hero-logo-wrap">
-            <Logo height={88} className="home__hero-logo" />
+    <div className="home home--landing">
+      <div className="landing__mesh" aria-hidden />
+      <div className="landing__orb landing__orb--a" aria-hidden />
+      <div className="landing__orb landing__orb--b" aria-hidden />
+
+      <section className="landing__hero">
+        <div className="landing__inner">
+          <div className="landing__logo-shell">
+            <div className="landing__logo-glow" aria-hidden />
+            <div className="landing__logo-card">
+              <Logo height={240} className="landing__logo-img" />
+            </div>
           </div>
-          <p className="home__hero-eyebrow">News, distilled</p>
-          <h1>Read what matters. Skip what does not.</h1>
-          <p className="home__lead">
-            Briefly is a reader for busy people: pull instant AI summaries, tune notifications, and
-            focus on the stories you care about.
-          </p>
-          <div className="home__cta-row">
-            <Link className="home__btn home__btn--primary" to="/register">
+
+          <p className="landing__brand">Briefly</p>
+          <p className="landing__eyebrow">News, distilled</p>
+
+          <h1 className="landing__display">
+            Read what <em>matters</em>.
+            <span className="landing__display-sub">Skip the noise.</span>
+          </h1>
+
+          <ul className="landing__highlights" aria-label="Product highlights">
+            <li>Global trending</li>
+            <li>Preference-aware</li>
+            <li>One-tap digests</li>
+          </ul>
+
+          <div className="landing__ctas">
+            <Link className="landing__btn landing__btn--solid" to="/register">
               Get started
             </Link>
-            <Link className="home__btn home__btn--secondary" to="/login">
+            <Link className="landing__btn landing__btn--outline" to="/login">
               Sign in
             </Link>
           </div>
-        </div>
-      </section>
-
-      <section className="home__section">
-        <h2 className="home__section-title">What you can do</h2>
-        <p className="home__section-desc">
-          Summaries, saved articles, and notification preferences—ready to use when you are signed in.
-        </p>
-        <div className="home__grid">
-          <Link className="home__card" to="/summary">
-            <h2>AI Summary</h2>
-            <p>
-              Open a featured article, generate a one-click digest, and follow along with a smooth
-              loading experience.
-            </p>
-            <span className="home__card-cta">Open AI Summary →</span>
-          </Link>
-          <Link className="home__card" to="/saved">
-            <h2>Saved articles</h2>
-            <p>
-              Save stories from the AI Summary page and revisit them anytime from your personal list.
-            </p>
-            <span className="home__card-cta">View saved →</span>
-          </Link>
-          <Link className="home__card" to="/settings">
-            <h2>Notification settings</h2>
-            <p>
-              Toggle alerts and pick Hourly or Daily digests. Your choices are saved on this device.
-            </p>
-            <span className="home__card-cta">Open settings →</span>
-          </Link>
         </div>
       </section>
     </div>

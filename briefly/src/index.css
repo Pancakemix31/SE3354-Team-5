@@ -1,16 +1,20 @@
-/* Global tokens — aligned with Briefly logo blues (royal → sky) */
+/* Briefly — unified light theme (white, slate, royal blue) */
 :root {
   --color-primary: #2563eb;
-  --color-primary-dark: #1e3a8a;
+  --color-primary-dark: #1e40af;
   --color-primary-hover: #3b82f6;
-  --color-sky: #60a5fa;
+  --color-sky: #0284c7;
   --color-accent: #eff6ff;
   --color-accent-hover: #dbeafe;
   --color-text: #0f172a;
   --color-text-muted: #64748b;
-  --color-border: #bfdbfe;
-  --shadow-sm: 0 1px 3px rgba(30, 58, 138, 0.08);
-  --shadow-md: 0 12px 40px rgba(30, 58, 138, 0.12);
+  --color-border: #e2e8f0;
+  --surface-root: #f1f5f9;
+  --surface-card: #ffffff;
+  --surface-card-solid: #ffffff;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 12px 40px rgba(30, 58, 138, 0.09);
+  --shadow-lg: 0 24px 60px rgba(30, 58, 138, 0.1);
   --radius: 16px;
   --radius-sm: 10px;
   --max-width: 1100px;
@@ -25,10 +29,16 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #ffffff;
+  background: var(--surface-root);
+  background-image:
+    radial-gradient(ellipse 120% 70% at 50% -35%, rgba(37, 99, 235, 0.09), transparent 58%),
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(14, 165, 233, 0.06), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(30, 58, 138, 0.04), transparent 50%);
+  background-attachment: fixed;
   color: var(--color-text);
   line-height: 1.6;
 }
@@ -42,4 +52,110 @@ body {
 code {
   font-family: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
   font-size: 0.9em;
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chip:hover {
+  border-color: #93c5fd;
+  color: var(--color-text);
+  background: var(--color-accent);
+}
+
+.chip--on {
+  background: var(--color-accent);
+  border-color: #93c5fd;
+  color: var(--color-primary-dark);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.72rem 1.35rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.28);
+  transition: filter 0.2s, transform 0.15s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Link buttons used on auth-gate feature pages */
+.home__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.72rem 1.35rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s, filter 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.home__btn:active {
+  transform: scale(0.98);
+}
+
+.home__btn--primary {
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.28);
+}
+
+.home__btn--primary:hover {
+  filter: brightness(1.05);
+}
+
+.home__btn--secondary {
+  color: var(--color-primary-dark);
+  background: #ffffff;
+  border: 2px solid #bfdbfe;
+}
+
+.home__btn--secondary:hover {
+  border-color: #60a5fa;
+  background: var(--color-accent);
 }

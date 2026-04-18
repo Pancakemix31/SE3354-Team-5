@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import './HomePage.css';
 
 /**
- * Landing hub with cards linking to the summary and settings flows.
+ * Landing hub with cards linking to product flows.
  */
 export default function HomePage() {
   return (
@@ -10,13 +10,13 @@ export default function HomePage() {
       <div className="page-hero hub-hero">
         <div className="page-hero__inner">
           <p className="use-case-eyebrow">
-            <span className="use-case-badge hub-badge--alt">Project hub</span>
-            <span className="use-case-label">Software Engineering class deliverable</span>
+            <span className="use-case-badge hub-badge--alt">Briefly Wire</span>
+            <span className="use-case-label">News reader demo</span>
           </p>
           <h1>Two interactive experiences, one cohesive product</h1>
           <p className="hero-lead">
-            <strong>Name: Faris Suleiman.</strong> Below are the two required flows—now running as
-            a React app—styled like a small professional news product called Briefly Wire.
+            Below are the main flows—running as a React app—styled like a compact professional news
+            product called Briefly Wire.
           </p>
         </div>
       </div>

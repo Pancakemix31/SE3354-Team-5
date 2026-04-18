@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSavedArticles } from '../context/SavedArticlesContext';
 import './SavedArticlesPage.css';
-// This page is used to display the saved articles
-// Created by Ridwan
+
 function SavedArticlesPage() {
   const { isAuthenticated } = useAuth();
   const { savedArticles, removeArticle, pendingCount, isOnline } = useSavedArticles();
@@ -27,7 +26,6 @@ function SavedArticlesPage() {
             </Link>
           </div>
         </div>
-        <p className="page-use-case-credit">Ridwan</p>
       </div>
     );
   }
@@ -91,8 +89,6 @@ function SavedArticlesPage() {
           ))}
         </ul>
       )}
-
-      <p className="page-use-case-credit">Ridwan</p>
     </div>
   );
 }

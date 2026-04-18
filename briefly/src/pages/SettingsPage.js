@@ -1,3 +1,5 @@
+/** Notification settings — toggle, frequency, localStorage. */
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import './SettingsPage.css';
@@ -11,8 +13,6 @@ const DEFAULT_FREQUENCY = 'daily';
 /**
  * Read string from localStorage; returns null if missing or unreadable.
  */
-
-//This page was created by Faris Suleiman
 function readStorage(key) {
   try {
     return window.localStorage.getItem(key);
@@ -194,7 +194,6 @@ function SettingsPage() {
         </section>
       </div>
 
-      <p className="page-use-case-credit">Faris Suleiman</p>
     </div>
   );
 }

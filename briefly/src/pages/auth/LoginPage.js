@@ -10,7 +10,7 @@ function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
+  const fromPath = location.state?.from?.pathname;
   const infoMessage = location.state?.message || '';
 
   const [email, setEmail] = useState('');
@@ -22,7 +22,11 @@ function LoginPage() {
     setError('');
     const result = login(email, password);
     if (result.ok) {
-      navigate(from, { replace: true });
+      const to =
+        fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
+          ? fromPath
+          : '/trending';
+      navigate(to, { replace: true });
     } else {
       setError(result.error);
     }
@@ -31,7 +35,7 @@ function LoginPage() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to sync preferences across sessions on this device."
+      subtitle="Sign in to sync briefings, topic preferences, and ratings on this device."
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
         {infoMessage ? (

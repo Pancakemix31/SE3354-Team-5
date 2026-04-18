@@ -19,8 +19,7 @@ export default function SiteLayout() {
       <footer className="site-footer">
         <div className="site-footer__inner">
           <p>
-            <strong>Name:</strong> Faris Suleiman · <strong>Course:</strong> Software Engineering
-            (SE3354)
+            <strong>Course:</strong> Software Engineering (SE3354)
           </p>
           <p>React + Vite — class project UI</p>
         </div>

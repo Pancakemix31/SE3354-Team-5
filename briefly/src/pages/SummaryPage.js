@@ -1,3 +1,5 @@
+/** AI Summary — article + generate summary flow (mock latency). */
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
@@ -6,7 +8,6 @@ import { useSavedArticles } from '../context/SavedArticlesContext';
 import { FEATURED_ARTICLE } from '../data/featuredArticle';
 import './SummaryPage.css';
 
-// This page is created by Faris Suleiman
 /** Simulated latency so loading state feels realistic (no network call). */
 const SUMMARY_DELAY_MS = 900;
 
@@ -159,9 +160,6 @@ function SummaryPage() {
         </section>
       )}
 
-      <p className="page-use-case-credit">
-        AI Summary · Faris Suleiman · Save article · Ridwan
-      </p>
     </div>
   );
 }

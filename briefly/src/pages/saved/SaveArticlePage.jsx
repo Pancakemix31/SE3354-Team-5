@@ -3,7 +3,7 @@ import PageShell from '../../components/PageShell';
 
 /**
  * Save-article use case (demo).
- * In production, this action lives on article cards; this page is for isolated QA / Ridwan’s flow.
+ * In production, this action lives on article cards; this page is for isolated QA.
  */
 export default function SaveArticlePage() {
   const [saved, setSaved] = useState(false);

@@ -37,7 +37,7 @@
 
 .settings-sidebar {
   padding: 1.15rem;
-  background: var(--color-accent);
+  background: var(--surface-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -81,7 +81,7 @@
 }
 
 .settings-panel {
-  background: #fff;
+  background: var(--surface-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
@@ -169,10 +169,10 @@
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: #cfd8dc;
+  background: rgba(148, 163, 184, 0.25);
   border-radius: 28px;
   transition: background 0.25s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .switch__slider::before {
@@ -182,10 +182,10 @@
   width: 22px;
   left: 3px;
   bottom: 3px;
-  background: #fff;
+  background: #f1f5f9;
   border-radius: 50%;
   transition: transform 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .switch input:checked + .switch__slider {
@@ -202,7 +202,7 @@
 }
 
 .switch:hover .switch__slider {
-  background: var(--color-accent-hover);
+  background: rgba(148, 163, 184, 0.35);
 }
 
 .switch input:checked + .switch__slider:hover {
@@ -213,32 +213,32 @@
   width: 100%;
   max-width: 300px;
   padding: 0.65rem 0.9rem;
+  padding-right: 2.25rem;
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--color-text);
-  background: var(--color-accent);
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232563eb' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231565c0' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.85rem center;
-  padding-right: 2.25rem;
 }
 
 .frequency-select:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-accent-hover);
+  border-color: #93c5fd;
+  background-color: var(--color-accent);
 }
 
 .frequency-select:focus {
   outline: none;
   border-color: var(--color-primary);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.2);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .settings-toast {
@@ -247,7 +247,7 @@
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--color-primary-dark);
-  background: linear-gradient(90deg, var(--color-accent) 0%, #fff 100%);
+  background: linear-gradient(90deg, #eff6ff 0%, #ffffff 100%);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   opacity: 0;
@@ -270,12 +270,3 @@
   line-height: 1.5;
 }
 
-.page-use-case-credit {
-  margin: 2rem auto 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-}

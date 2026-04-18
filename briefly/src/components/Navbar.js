@@ -1,31 +1,30 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import './Navbar.css';
 
 /**
- * Product navigation + auth actions. Add new top-level links here when features ship.
+ * Full app navigation — only rendered inside authenticated routes (MainLayout).
  */
 function Navbar() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <NavLink to="/" className="navbar__brand" end>
-          <Logo height={40} className="navbar__logo-img" />
+        <NavLink to="/trending" className="navbar__brand">
+          <Logo height={48} className="navbar__logo-img" />
           <span className="navbar__wordmark">Briefly</span>
         </NavLink>
         <nav className="navbar__links" aria-label="Main">
           <NavLink
-            to="/"
-            end
+            to="/trending"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
             }
           >
-            Home
+            Trending
           </NavLink>
           <NavLink
             to="/summary"
@@ -36,6 +35,14 @@ function Navbar() {
             AI Summary
           </NavLink>
           <NavLink
+            to="/rate-news"
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+          >
+            Rate
+          </NavLink>
+          <NavLink
             to="/saved"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
@@ -44,34 +51,37 @@ function Navbar() {
             Saved
           </NavLink>
           <NavLink
+            to="/preferences/news"
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+          >
+            Topics
+          </NavLink>
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `navbar__link${isActive ? ' navbar__link--active' : ''}`
+            }
+          >
+            Account
+          </NavLink>
+          <NavLink
             to="/settings"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
             }
           >
-            Settings
+            Alerts
           </NavLink>
         </nav>
         <div className="navbar__auth">
-          {isAuthenticated ? (
-            <>
-              <span className="navbar__user" title={user.email}>
-                Hi, {user.name?.split(' ')[0] || 'there'}
-              </span>
-              <button type="button" className="navbar__btn navbar__btn--ghost" onClick={logout}>
-                Log out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="navbar__btn navbar__btn--ghost">
-                Sign in
-              </Link>
-              <Link to="/register" className="navbar__btn navbar__btn--primary">
-                Get started
-              </Link>
-            </>
-          )}
+          <span className="navbar__user" title={user.email}>
+            {user.name?.split(' ')[0] || 'Reader'}
+          </span>
+          <button type="button" className="navbar__btn navbar__btn--ghost" onClick={logout}>
+            Log out
+          </button>
         </div>
       </div>
     </header>

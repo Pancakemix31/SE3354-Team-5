@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './DeleteAccountPage.css';
-// This page is used to delete the user's account
-// Created by Ridwan
+
 function DeleteAccountPage() {
   const { isAuthenticated, deleteAccount } = useAuth();
   const navigate = useNavigate();
@@ -65,8 +64,6 @@ function DeleteAccountPage() {
           Delete account…
         </button>
       </section>
-
-      <p className="page-use-case-credit">Ridwan</p>
 
       {modalOpen ? (
         <div
