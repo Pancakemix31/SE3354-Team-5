@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext.js';
 import AuthLayout from './AuthLayout';
 
 /**
- * Registration — stores a mock user in localStorage. Not for production secrets.
+ * Registration — wires to Firebase Auth.
  */
 function RegisterPage() {
-  const { register } = useAuth();
+  const { register, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -15,23 +15,70 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e) => {
+  const validatePassword = (value) => {
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    if (!/[A-Za-z]/.test(value)) {
+      return 'Password must include at least one letter.';
+    }
+    if (!/[0-9]/.test(value)) {
+      return 'Password must include at least one number.';
+    }
+    if (!/[!@#$%^&*(),.?"':{}|<>\[\]\\/~`_+=;-]/.test(value)) {
+      return 'Password must include at least one special character.';
+    }
+    return '';
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+
+    const validationError = validatePassword(password);
+    if (validationError) {
+      setError(validationError);
       return;
     }
+
     if (password !== confirm) {
       setError('Passwords do not match.');
       return;
     }
-    const result = register(name, email, password);
-    if (result.ok) {
-      navigate('/trending', { replace: true });
-    } else {
-      setError(result.error);
+
+    setLoading(true);
+    try {
+      const result = await register(name, email, password);
+      if (result.ok) {
+        navigate('/trending', { replace: true });
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Registration error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      if (result.ok) {
+        navigate('/trending', { replace: true });
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Unable to sign in with Google. Please try again.');
+      console.error('Google registration error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,8 +144,16 @@ function RegisterPage() {
             onChange={(e) => setConfirm(e.target.value)}
           />
         </div>
-        <button type="submit" className="auth-submit">
-          Create account
+        <button type="submit" className="auth-submit" disabled={loading}>
+          {loading ? 'Creating account...' : 'Create account'}
+        </button>
+        <button
+          type="button"
+          className="auth-google"
+          disabled={loading}
+          onClick={onGoogleSignIn}
+        >
+          {loading ? 'Please wait...' : 'Continue with Google'}
         </button>
       </form>
       <p className="auth-switch">

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext.js';
 import AuthLayout from './AuthLayout';
 
 /**
- * Sign-in form — wires to AuthContext (local mock). Swap for real API later.
+ * Sign-in form — wires to Firebase Auth.
  */
 function LoginPage() {
-  const { login } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const fromPath = location.state?.from?.pathname;
@@ -16,19 +16,50 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const result = login(email, password);
-    if (result.ok) {
-      const to =
-        fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
-          ? fromPath
-          : '/trending';
-      navigate(to, { replace: true });
-    } else {
-      setError(result.error);
+    setLoading(true);
+    try {
+      const result = await login(email, password);
+      if (result.ok) {
+        const to =
+          fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
+            ? fromPath
+            : '/trending';
+        navigate(to, { replace: true });
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      if (result.ok) {
+        const to =
+          fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
+            ? fromPath
+            : '/trending';
+        navigate(to, { replace: true });
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('Unable to sign in with Google. Please try again.');
+      console.error('Google login error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,8 +104,16 @@ function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="auth-submit">
-          Sign in
+        <button type="submit" className="auth-submit" disabled={loading}>
+          {loading ? 'Signing in...' : 'Sign in'}
+        </button>
+        <button
+          type="button"
+          className="auth-google"
+          disabled={loading}
+          onClick={onGoogleSignIn}
+        >
+          {loading ? 'Please wait...' : 'Continue with Google'}
         </button>
       </form>
       <p className="auth-switch">
