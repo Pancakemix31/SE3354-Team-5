@@ -9,10 +9,12 @@ import React, {
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
   deleteUser,
   updateProfile as updateFirebaseProfile,
+  GoogleAuthProvider,
 } from 'firebase/auth';
 import {
   doc,
@@ -24,6 +26,8 @@ import {
 import { auth, db } from '../config/firebase';
 import { clearPendingForEmail, clearSavedArticlesForUser } from '../lib/savedArticlesStorage';
 
+const googleProvider = new GoogleAuthProvider();
+
 /**
  * Firebase authentication — persists users + session in Firebase Auth and Firestore.
  */
@@ -33,21 +37,32 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const syncUserFromFirebase = useCallback(async (firebaseUser) => {
+    if (!firebaseUser) {
+      setUser(null);
+      return null;
+    }
+
+    const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+
+    const nextUser = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      name: firebaseUser.displayName || userData.name || '',
+      digestFrequency: userData.digestFrequency || 'daily',
+      summaryDepth: userData.summaryDepth || 'concise',
+    };
+
+    setUser(nextUser);
+    return nextUser;
+  }, []);
+
   // Listen to Firebase auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Get additional user data from Firestore
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        const userData = userDoc.exists() ? userDoc.data() : {};
-        
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          name: firebaseUser.displayName || userData.name || '',
-          digestFrequency: userData.digestFrequency || 'daily',
-          summaryDepth: userData.summaryDepth || 'concise',
-        });
+        await syncUserFromFirebase(firebaseUser);
       } else {
         setUser(null);
       }
@@ -55,7 +70,7 @@ export function AuthProvider({ children }) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [syncUserFromFirebase]);
 
   const register = useCallback(async (name, email, password) => {
     try {
@@ -74,6 +89,7 @@ export function AuthProvider({ children }) {
         createdAt: new Date(),
       });
 
+      await syncUserFromFirebase(firebaseUser);
       return { ok: true };
     } catch (error) {
       let errorMessage = 'An error occurred during registration.';
@@ -96,16 +112,15 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      await syncUserFromFirebase(credential.user);
       return { ok: true };
     } catch (error) {
-      let errorMessage = 'An error occurred during sign in.';
+      let errorMessage = 'An unexpected error occurred during sign in.';
       switch (error.code) {
         case 'auth/user-not-found':
-          errorMessage = 'No account found with this email.';
-          break;
         case 'auth/wrong-password':
-          errorMessage = 'Invalid password.';
+          errorMessage = 'Username or password is incorrect.';
           break;
         case 'auth/invalid-email':
           errorMessage = 'Invalid email address.';
@@ -117,6 +132,35 @@ export function AuthProvider({ children }) {
           console.error('Login error:', error);
       }
       return { ok: false, error: errorMessage };
+    }
+  }, []);
+
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
+
+      if (firebaseUser) {
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (!userDoc.exists()) {
+          await setDoc(userRef, {
+            name: firebaseUser.displayName || '',
+            email: firebaseUser.email || '',
+            digestFrequency: 'daily',
+            summaryDepth: 'concise',
+            createdAt: new Date(),
+          });
+        }
+
+        await syncUserFromFirebase(firebaseUser);
+      }
+
+      return { ok: true };
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      return { ok: false, error: 'Unable to sign in with Google. Please try again.' };
     }
   }, []);
 
@@ -207,11 +251,12 @@ export function AuthProvider({ children }) {
       loading,
       login,
       register,
+      signInWithGoogle,
       logout,
       deleteAccount,
       updateProfile,
     }),
-    [user, loading, login, register, logout, deleteAccount, updateProfile]
+    [user, loading, login, register, signInWithGoogle, logout, deleteAccount, updateProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

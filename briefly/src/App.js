@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext.js';
 import { SavedArticlesProvider } from './context/SavedArticlesContext';
 import MainLayout from './layouts/MainLayout';
 import RequireAuth from './layouts/RequireAuth';
@@ -13,8 +13,8 @@ import TrendingPage from './pages/TrendingPage';
 import RateNewsPage from './pages/RateNewsPage';
 import NewsPreferencesPage from './pages/NewsPreferencesPage';
 import AccountProfilePage from './pages/AccountProfilePage';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
+import LoginPage from './pages/auth/LoginPage.js';
+import RegisterPage from './pages/auth/RegisterPage.js';
 import './App.css';
 
 /**
