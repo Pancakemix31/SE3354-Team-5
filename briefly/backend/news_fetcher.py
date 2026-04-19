@@ -20,6 +20,6 @@ def get_news(query: str) -> List[Dict]:
 
     articles = response.get("articles", [])
 
-    print(articles)
+    if (len(articles) >= 10):
+        articles = articles[:10]
     return articles
-
