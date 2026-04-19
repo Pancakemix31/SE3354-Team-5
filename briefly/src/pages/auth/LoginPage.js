@@ -16,19 +16,28 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const result = login(email, password);
-    if (result.ok) {
-      const to =
-        fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
-          ? fromPath
-          : '/trending';
-      navigate(to, { replace: true });
-    } else {
-      setError(result.error);
+    setLoading(true);
+    try {
+      const result = await login(email, password);
+      if (result.ok) {
+        const to =
+          fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
+            ? fromPath
+            : '/trending';
+        navigate(to, { replace: true });
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,8 +82,8 @@ function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="auth-submit">
-          Sign in
+        <button type="submit" className="auth-submit" disabled={loading}>
+          {loading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
       <p className="auth-switch">

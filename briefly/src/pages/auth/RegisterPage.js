@@ -15,23 +15,32 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
     if (password !== confirm) {
       setError('Passwords do not match.');
       return;
     }
-    const result = register(name, email, password);
-    if (result.ok) {
-      navigate('/trending', { replace: true });
-    } else {
-      setError(result.error);
+    setLoading(true);
+    try {
+      const result = await register(name, email, password);
+      if (result.ok) {
+        navigate('/trending', { replace: true });
+      } else {
+        setError(result.error);
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Registration error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,8 +106,8 @@ function RegisterPage() {
             onChange={(e) => setConfirm(e.target.value)}
           />
         </div>
-        <button type="submit" className="auth-submit">
-          Create account
+        <button type="submit" className="auth-submit" disabled={loading}>
+          {loading ? 'Creating account...' : 'Create account'}
         </button>
       </form>
       <p className="auth-switch">

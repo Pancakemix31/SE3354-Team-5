@@ -32,10 +32,10 @@ function DeleteAccountPage() {
     setError('');
   };
 
-  const onConfirmDelete = (e) => {
+  const onConfirmDelete = async (e) => {
     e.preventDefault();
     setError('');
-    const result = deleteAccount(password);
+    const result = await deleteAccount(password);
     if (result.ok) {
       setModalOpen(false);
       navigate('/', { replace: true });
