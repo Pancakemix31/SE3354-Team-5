@@ -11,7 +11,7 @@ export default function RegisterPage() {
   function handleSubmit(e) {
     e.preventDefault();
     login({ email: email || 'new@briefly.app', displayName: 'New user' });
-    navigate('/preferences/news', { replace: true });
+    navigate('/profile', { replace: true });
   }
 
   return (

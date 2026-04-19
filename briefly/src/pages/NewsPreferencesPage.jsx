@@ -16,18 +16,35 @@ const REGIONS = [
   'Global',
 ];
 
+const DEFAULTS = {
+  categories: ['Technology', 'World'],
+  region: 'Global',
+};
+
 export default function NewsPreferencesPage() {
   const { user, isAuthenticated } = useAuth();
-  const [selected, setSelected] = useState(() => new Set(['Technology', 'World']));
-  const [region, setRegion] = useState('Global');
+  const [selected, setSelected] = useState(new Set(DEFAULTS.categories));
+  const [region, setRegion] = useState(DEFAULTS.region);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
 
   useEffect(() => {
-    if (!user?.email) return;
-    const loaded = loadNewsPreferences(user.email);
-    setSelected(new Set(loaded.categories));
-    setRegion(loaded.region);
-  }, [user?.email]);
+    if (!user?.uid) {
+      setLoading(false);
+      return;
+    }
+
+    const loadPrefs = async () => {
+      setLoading(true);
+      const loaded = await loadNewsPreferences(user.uid);
+      setSelected(new Set(loaded.categories));
+      setRegion(loaded.region);
+      setLoading(false);
+    };
+
+    loadPrefs();
+  }, [user?.uid]);
 
   function toggle(cat) {
     setSelected((prev) => {
@@ -38,15 +55,19 @@ export default function NewsPreferencesPage() {
     });
   }
 
-  function handleSave(e) {
+  async function handleSave(e) {
     e.preventDefault();
-    if (!user?.email) return;
+    if (!user?.uid) return;
     if (selected.size === 0) return;
-    saveNewsPreferences(user.email, {
+
+    setSaving(true);
+    const success = await saveNewsPreferences(user.uid, {
       categories: Array.from(selected),
       region,
     });
-    setToast('News preferences updated.');
+    setSaving(false);
+
+    setToast(success ? 'News preferences updated.' : 'Failed to save preferences. Please try again.');
     window.setTimeout(() => setToast(''), 2400);
   }
 
@@ -68,6 +89,17 @@ export default function NewsPreferencesPage() {
             </Link>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="feature-page">
+        <header className="feature-page__header">
+          <h1>News preferences</h1>
+          <p>Loading your saved preferences...</p>
+        </header>
       </div>
     );
   }
@@ -116,8 +148,8 @@ export default function NewsPreferencesPage() {
             </select>
           </div>
         </section>
-        <button type="submit" className="btn-primary" disabled={selected.size === 0}>
-          Save preferences
+        <button type="submit" className="btn-primary" disabled={selected.size === 0 || saving}>
+          {saving ? 'Saving...' : 'Save preferences'}
         </button>
       </form>
     </div>

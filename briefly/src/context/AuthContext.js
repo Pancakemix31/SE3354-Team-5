@@ -61,6 +61,10 @@ export function AuthProvider({ children }) {
       notificationFrequency: userData.notificationFrequency || '1d',
       notificationsPaused: userData.notificationsPaused ?? false,
       breakingAlerts: userData.breakingAlerts ?? true,
+      newsCategories: Array.isArray(userData.newsCategories) && userData.newsCategories.length > 0
+        ? userData.newsCategories
+        : ['Technology', 'World'],
+      newsRegion: typeof userData.newsRegion === 'string' ? userData.newsRegion : 'Global',
     };
 
     setUser(nextUser);
@@ -98,6 +102,8 @@ export function AuthProvider({ children }) {
         notificationFrequency: '1d',
         notificationsPaused: false,
         breakingAlerts: true,
+        newsCategories: ['Technology', 'World'],
+        newsRegion: 'Global',
         createdAt: new Date(),
       });
 
@@ -165,6 +171,8 @@ export function AuthProvider({ children }) {
             notificationFrequency: '1d',
             notificationsPaused: false,
             breakingAlerts: true,
+            newsCategories: ['Technology', 'World'],
+            newsRegion: 'Global',
             createdAt: new Date(),
           });
         }
@@ -200,6 +208,14 @@ export function AuthProvider({ children }) {
 
       if (fields.summaryDepth === 'concise' || fields.summaryDepth === 'deep') {
         updates.summaryDepth = fields.summaryDepth;
+      }
+
+      if (Array.isArray(fields.newsCategories) && fields.newsCategories.length > 0) {
+        updates.newsCategories = fields.newsCategories;
+      }
+
+      if (typeof fields.newsRegion === 'string') {
+        updates.newsRegion = fields.newsRegion;
       }
 
       if (Object.keys(updates).length > 0) {

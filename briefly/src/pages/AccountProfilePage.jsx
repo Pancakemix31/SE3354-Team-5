@@ -3,12 +3,32 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/featurePages.css';
 
+const CATEGORIES = ['Finance', 'World', 'Politics', 'Technology', 'Science', 'Culture'];
+const REGIONS = [
+  'North America',
+  'Europe',
+  'Middle East',
+  'Asia Pacific',
+  'Latin America',
+  'Africa',
+  'Global',
+];
+const DEFAULTS = {
+  categories: ['Technology', 'World'],
+  region: 'Global',
+};
+
 export default function AccountProfilePage() {
   const { user, isAuthenticated, updateProfile } = useAuth();
   const [name, setName] = useState('');
   const [digestFrequency, setDigestFrequency] = useState('1d');
   const [summaryDepth, setSummaryDepth] = useState('concise');
+  const [selectedCategories, setSelectedCategories] = useState(new Set(DEFAULTS.categories));
+  const [region, setRegion] = useState(DEFAULTS.region);
   const [toast, setToast] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [customTopic, setCustomTopic] = useState('');
 
   function normalizeFrequency(value) {
     if (value === 'hourly') return '1h';
@@ -21,19 +41,60 @@ export default function AccountProfilePage() {
     setName(user.name || '');
     setDigestFrequency(normalizeFrequency(user.digestFrequency));
     setSummaryDepth(user.summaryDepth === 'deep' ? 'deep' : 'concise');
+    setSelectedCategories(
+      new Set(Array.isArray(user.newsCategories) && user.newsCategories.length > 0
+        ? user.newsCategories
+        : DEFAULTS.categories)
+    );
+    setRegion(user.newsRegion || DEFAULTS.region);
   }, [user]);
 
-  function handleSubmit(e) {
+  function toggleCategory(category) {
+    setSelectedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) next.delete(category);
+      else next.add(category);
+      return next;
+    });
+  }
+
+  function handleAddCustomTopic() {
+    const trimmed = customTopic.trim();
+    if (!trimmed) return;
+    
+    setSelectedCategories((prev) => new Set([...prev, trimmed]));
+    setCustomTopic('');
+    setShowAddModal(false);
+  }
+
+  function handleRemoveCustomTopic(topic) {
+    setSelectedCategories((prev) => {
+      const next = new Set(prev);
+      next.delete(topic);
+      return next;
+    });
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    const result = updateProfile({
+    if (selectedCategories.size === 0) return;
+
+    setSaving(true);
+    const result = await updateProfile({
       name,
       digestFrequency,
       summaryDepth,
+      newsCategories: Array.from(selectedCategories),
+      newsRegion: region,
     });
+    setSaving(false);
+
     if (result.ok) {
       setToast('Account preferences saved.');
-      window.setTimeout(() => setToast(''), 2400);
+    } else {
+      setToast(result.error || 'Unable to save account preferences.');
     }
+    window.setTimeout(() => setToast(''), 2400);
   }
 
   if (!isAuthenticated) {
@@ -62,7 +123,7 @@ export default function AccountProfilePage() {
     <div className="feature-page">
       <header className="feature-page__header">
         <h1>Account preferences</h1>
-        <p>Display name, digest cadence, and summary depth sync to this browser profile.</p>
+        <p>Update your display name, digest cadence, summary depth, and news topics from one page.</p>
       </header>
       {toast ? (
         <p className="feature-toast" role="status">
@@ -108,8 +169,111 @@ export default function AccountProfilePage() {
             <option value="deep">Deep — context, risks, and sources</option>
           </select>
         </div>
-        <button type="submit" className="btn-primary">
-          Save account preferences
+        <section className="pref-section">
+          <h2>News topics</h2>
+          <p>Pick the categories you want Briefly to prioritize.</p>
+          <div className="chip-row">
+            {CATEGORIES.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className={`chip${selectedCategories.has(category) ? ' chip--on' : ''}`}
+                onClick={() => toggleCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="chip chip--add"
+              onClick={() => setShowAddModal(true)}
+              title="Add custom topic"
+            >
+              Add +
+            </button>
+          </div>
+          {Array.from(selectedCategories)
+            .filter((cat) => !CATEGORIES.includes(cat))
+            .length > 0 && (
+            <div className="custom-topics">
+              <h3>Custom topics</h3>
+              <div className="chip-row">
+                {Array.from(selectedCategories)
+                  .filter((cat) => !CATEGORIES.includes(cat))
+                  .map((customCat) => (
+                    <div key={customCat} className="chip chip--custom">
+                      {customCat}
+                      <button
+                        type="button"
+                        className="chip__remove"
+                        onClick={() => handleRemoveCustomTopic(customCat)}
+                        aria-label={`Remove ${customCat}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+          {showAddModal && (
+            <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <h3>Add custom topic</h3>
+                <input
+                  type="text"
+                  className="modal-input"
+                  placeholder="e.g., Cryptocurrency, Space, Gaming"
+                  value={customTopic}
+                  onChange={(e) => setCustomTopic(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') handleAddCustomTopic();
+                  }}
+                  autoFocus
+                />
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setCustomTopic('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={handleAddCustomTopic}
+                    disabled={!customTopic.trim()}
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+        <section className="pref-section">
+          <h2>Region focus</h2>
+          <div className="stack-field">
+            <label htmlFor="acct-region">Primary region</label>
+            <select
+              id="acct-region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+            >
+              {REGIONS.map((regionOption) => (
+                <option key={regionOption} value={regionOption}>
+                  {regionOption}
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
+        <button type="submit" className="btn-primary" disabled={selectedCategories.size === 0 || saving}>
+          {saving ? 'Saving...' : 'Save account preferences'}
         </button>
       </form>
     </div>
