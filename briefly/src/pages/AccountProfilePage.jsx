@@ -6,14 +6,20 @@ import '../styles/featurePages.css';
 export default function AccountProfilePage() {
   const { user, isAuthenticated, updateProfile } = useAuth();
   const [name, setName] = useState('');
-  const [digestFrequency, setDigestFrequency] = useState('daily');
+  const [digestFrequency, setDigestFrequency] = useState('1d');
   const [summaryDepth, setSummaryDepth] = useState('concise');
   const [toast, setToast] = useState('');
+
+  function normalizeFrequency(value) {
+    if (value === 'hourly') return '1h';
+    if (value === 'daily') return '1d';
+    return ['30m', '1h', '6h', '12h', '1d'].includes(value) ? value : '1d';
+  }
 
   useEffect(() => {
     if (!user) return;
     setName(user.name || '');
-    setDigestFrequency(user.digestFrequency === 'hourly' ? 'hourly' : 'daily');
+    setDigestFrequency(normalizeFrequency(user.digestFrequency));
     setSummaryDepth(user.summaryDepth === 'deep' ? 'deep' : 'concise');
   }, [user]);
 
@@ -84,8 +90,11 @@ export default function AccountProfilePage() {
             value={digestFrequency}
             onChange={(e) => setDigestFrequency(e.target.value)}
           >
-            <option value="daily">Daily briefing</option>
-            <option value="hourly">Hourly pulse (dense)</option>
+            <option value="30m">Every 30 minutes</option>
+            <option value="1h">Every 1 hour</option>
+            <option value="6h">Every 6 hours</option>
+            <option value="12h">Every 12 hours</option>
+            <option value="1d">Every 1 day</option>
           </select>
         </div>
         <div className="stack-field">

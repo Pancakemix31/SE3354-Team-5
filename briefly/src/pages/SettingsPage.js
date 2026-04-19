@@ -8,7 +8,14 @@ const STORAGE_ENABLED = 'briefly_notifications_enabled';
 const STORAGE_FREQUENCY = 'briefly_notifications_frequency';
 
 const DEFAULT_ENABLED = false;
-const DEFAULT_FREQUENCY = 'daily';
+const DEFAULT_FREQUENCY = '1d';
+const FREQUENCY_OPTIONS = ['30m', '1h', '6h', '12h', '1d'];
+
+function normalizeFrequency(value) {
+  if (value === 'hourly') return '1h';
+  if (value === 'daily') return '1d';
+  return FREQUENCY_OPTIONS.includes(value) ? value : DEFAULT_FREQUENCY;
+}
 
 /**
  * Read string from localStorage; returns null if missing or unreadable.
@@ -37,8 +44,7 @@ function loadInitialSettings() {
   const freqRaw = readStorage(STORAGE_FREQUENCY);
 
   const enabled = enabledRaw === 'true';
-  const frequency =
-    freqRaw === 'hourly' || freqRaw === 'daily' ? freqRaw : DEFAULT_FREQUENCY;
+  const frequency = normalizeFrequency(freqRaw);
 
   if (enabledRaw === null && freqRaw === null) {
     return { enabled: DEFAULT_ENABLED, frequency: DEFAULT_FREQUENCY };
@@ -80,8 +86,14 @@ function SettingsPage() {
     const next = e.target.value;
     setState((s) => ({ ...s, frequency: next }));
     writeStorage(STORAGE_FREQUENCY, next);
-    const label = next === 'hourly' ? 'Hourly' : 'Daily';
-    showToast(`Digest set to ${label}.`);
+    const labels = {
+      '30m': 'Every 30 minutes',
+      '1h': 'Every 1 hour',
+      '6h': 'Every 6 hours',
+      '12h': 'Every 12 hours',
+      '1d': 'Every 1 day',
+    };
+    showToast(`Digest set to ${labels[next] || 'custom cadence'}.`);
   };
 
   return (
@@ -175,8 +187,11 @@ function SettingsPage() {
               value={frequency}
               onChange={onFrequency}
             >
-              <option value="hourly">Hourly</option>
-              <option value="daily">Daily</option>
+              <option value="30m">Every 30 minutes</option>
+              <option value="1h">Every 1 hour</option>
+              <option value="6h">Every 6 hours</option>
+              <option value="12h">Every 12 hours</option>
+              <option value="1d">Every 1 day</option>
             </select>
           </div>
 
