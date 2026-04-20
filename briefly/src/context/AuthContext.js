@@ -37,6 +37,12 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const normalizeFrequency = (value) => {
+    if (value === 'hourly') return '1h';
+    if (value === 'daily') return '1d';
+    return ['30m', '1h', '6h', '12h', '1d'].includes(value) ? value : '1d';
+  };
+
   const syncUserFromFirebase = useCallback(async (firebaseUser) => {
     if (!firebaseUser) {
       setUser(null);
@@ -50,8 +56,15 @@ export function AuthProvider({ children }) {
       uid: firebaseUser.uid,
       email: firebaseUser.email,
       name: firebaseUser.displayName || userData.name || '',
-      digestFrequency: userData.digestFrequency || 'daily',
+      digestFrequency: normalizeFrequency(userData.digestFrequency),
       summaryDepth: userData.summaryDepth || 'concise',
+      notificationFrequency: userData.notificationFrequency || '1d',
+      notificationsPaused: userData.notificationsPaused ?? false,
+      breakingAlerts: userData.breakingAlerts ?? true,
+      newsCategories: Array.isArray(userData.newsCategories) && userData.newsCategories.length > 0
+        ? userData.newsCategories
+        : ['Technology', 'World'],
+      newsRegion: typeof userData.newsRegion === 'string' ? userData.newsRegion : 'Global',
     };
 
     setUser(nextUser);
@@ -84,8 +97,13 @@ export function AuthProvider({ children }) {
       await setDoc(doc(db, 'users', firebaseUser.uid), {
         name: name.trim(),
         email: email.trim().toLowerCase(),
-        digestFrequency: 'daily',
+        digestFrequency: '1d',
         summaryDepth: 'concise',
+        notificationFrequency: '1d',
+        notificationsPaused: false,
+        breakingAlerts: true,
+        newsCategories: ['Technology', 'World'],
+        newsRegion: 'Global',
         createdAt: new Date(),
       });
 
@@ -148,8 +166,13 @@ export function AuthProvider({ children }) {
           await setDoc(userRef, {
             name: firebaseUser.displayName || '',
             email: firebaseUser.email || '',
-            digestFrequency: 'daily',
+            digestFrequency: '1d',
             summaryDepth: 'concise',
+            notificationFrequency: '1d',
+            notificationsPaused: false,
+            breakingAlerts: true,
+            newsCategories: ['Technology', 'World'],
+            newsRegion: 'Global',
             createdAt: new Date(),
           });
         }
@@ -178,12 +201,21 @@ export function AuthProvider({ children }) {
         await updateFirebaseProfile(auth.currentUser, { displayName: fields.name.trim() });
       }
 
-      if (fields.digestFrequency === 'hourly' || fields.digestFrequency === 'daily') {
-        updates.digestFrequency = fields.digestFrequency;
+      const normalized = normalizeFrequency(fields.digestFrequency);
+      if (normalized) {
+        updates.digestFrequency = normalized;
       }
 
       if (fields.summaryDepth === 'concise' || fields.summaryDepth === 'deep') {
         updates.summaryDepth = fields.summaryDepth;
+      }
+
+      if (Array.isArray(fields.newsCategories) && fields.newsCategories.length > 0) {
+        updates.newsCategories = fields.newsCategories;
+      }
+
+      if (typeof fields.newsRegion === 'string') {
+        updates.newsRegion = fields.newsRegion;
       }
 
       if (Object.keys(updates).length > 0) {

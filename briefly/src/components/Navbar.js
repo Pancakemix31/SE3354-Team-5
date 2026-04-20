@@ -51,28 +51,12 @@ function Navbar() {
             Saved
           </NavLink>
           <NavLink
-            to="/preferences/news"
-            className={({ isActive }) =>
-              `navbar__link${isActive ? ' navbar__link--active' : ''}`
-            }
-          >
-            Topics
-          </NavLink>
-          <NavLink
             to="/profile"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
             }
           >
             Account
-          </NavLink>
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `navbar__link${isActive ? ' navbar__link--active' : ''}`
-            }
-          >
-            Alerts
           </NavLink>
         </nav>
         <div className="navbar__auth">

@@ -1,36 +1,53 @@
-const keyFor = (email) => `briefly_news_prefs:${(email || '').toLowerCase()}`;
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 const DEFAULTS = {
   categories: ['Technology', 'World'],
   region: 'Global',
 };
 
-export function loadNewsPreferences(email) {
-  if (!email) return { ...DEFAULTS };
+export async function loadNewsPreferences(uid) {
+  if (!uid) {
+    return { ...DEFAULTS };
+  }
+
   try {
-    const raw = localStorage.getItem(keyFor(email));
-    if (!raw) return { ...DEFAULTS };
-    const parsed = JSON.parse(raw);
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    if (!userDoc.exists()) {
+      return { ...DEFAULTS };
+    }
+
+    const data = userDoc.data();
     return {
-      categories: Array.isArray(parsed.categories) ? parsed.categories : DEFAULTS.categories,
-      region: typeof parsed.region === 'string' ? parsed.region : DEFAULTS.region,
+      categories: Array.isArray(data.newsCategories) && data.newsCategories.length > 0
+        ? data.newsCategories
+        : DEFAULTS.categories,
+      region: typeof data.newsRegion === 'string' ? data.newsRegion : DEFAULTS.region,
     };
-  } catch {
+  } catch (error) {
+    console.error('Error loading news preferences:', error);
     return { ...DEFAULTS };
   }
 }
 
-export function saveNewsPreferences(email, prefs) {
-  if (!email) return;
+export async function saveNewsPreferences(uid, prefs) {
+  if (!uid) {
+    return false;
+  }
+
   try {
-    localStorage.setItem(
-      keyFor(email),
-      JSON.stringify({
-        categories: prefs.categories,
-        region: prefs.region,
-      })
+    await setDoc(
+      doc(db, 'users', uid),
+      {
+        newsCategories: prefs.categories,
+        newsRegion: prefs.region,
+        updatedAt: new Date(),
+      },
+      { merge: true }
     );
-  } catch {
-    /* ignore */
+    return true;
+  } catch (error) {
+    console.error('Error saving news preferences:', error);
+    return false;
   }
 }
