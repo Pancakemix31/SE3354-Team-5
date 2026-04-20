@@ -10,6 +10,7 @@ import SettingsPage from './pages/SettingsPage';
 import SavedArticlesPage from './pages/SavedArticlesPage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
 import TrendingPage from './pages/TrendingPage';
+import NewsArticlePage from './pages/NewsArticlePage';
 import AccountProfilePage from './pages/AccountProfilePage';
 import LoginPage from './pages/auth/LoginPage.js';
 import RegisterPage from './pages/auth/RegisterPage.js';
@@ -38,6 +39,7 @@ function App() {
               <Route element={<RequireAuth />}>
                 <Route element={<MainLayout />}>
                   <Route path="/news" element={<TrendingPage />} />
+                  <Route path="/news/:articleId" element={<NewsArticlePage />} />
                   <Route path="/trending" element={<TrendingPage />} />
                   <Route path="/profile" element={<AccountProfilePage />} />
                   <Route path="/summary" element={<SummaryPage />} />
