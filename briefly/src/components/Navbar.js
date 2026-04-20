@@ -13,18 +13,18 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <NavLink to="/trending" className="navbar__brand">
+        <NavLink to="/news" className="navbar__brand">
           <Logo height={48} className="navbar__logo-img" />
           <span className="navbar__wordmark">Briefly</span>
         </NavLink>
         <nav className="navbar__links" aria-label="Main">
           <NavLink
-            to="/trending"
+            to="/news"
             className={({ isActive }) =>
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
             }
           >
-            Trending
+            News
           </NavLink>
           <NavLink
             to="/summary"
@@ -33,14 +33,6 @@ function Navbar() {
             }
           >
             AI Summary
-          </NavLink>
-          <NavLink
-            to="/rate-news"
-            className={({ isActive }) =>
-              `navbar__link${isActive ? ' navbar__link--active' : ''}`
-            }
-          >
-            Rate
           </NavLink>
           <NavLink
             to="/saved"

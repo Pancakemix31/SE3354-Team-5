@@ -52,7 +52,7 @@ function RegisterPage() {
     try {
       const result = await register(name, email, password);
       if (result.ok) {
-        navigate('/trending', { replace: true });
+        navigate('/news', { replace: true });
       } else {
         setError(result.error);
       }
@@ -70,7 +70,7 @@ function RegisterPage() {
     try {
       const result = await signInWithGoogle();
       if (result.ok) {
-        navigate('/trending', { replace: true });
+        navigate('/news', { replace: true });
       } else {
         setError(result.error);
       }
