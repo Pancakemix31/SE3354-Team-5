@@ -1,38 +1,42 @@
-from google import genai
+import json
 import os
+from google import genai
 from dotenv import load_dotenv
-from news_fetcher import get_news
 load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GeminiAPI_KEY"))
 
-def summarize_news_article(articles):
+def summarize_news_article(preference, articles):
     prompt = f"""
-You are a strict news ranking and summarization assistant.
+You are a professional news summarization assistant.
 
-You will be given a JSON-like list of news articles.
+The user preference is: {preference}
 
-TASK:
-1. Deduplicate similar stories
-2. Rank by recency, importance, impact
-3. Select top 10
-4. Summarize each in 2–3 sentences
-5. Output STRICT JSON
+You will be given a list of news articles.
+For each article, produce a summary entry containing:
+- title:
+- source:
+- summary:
+- url:
+
+Only output valid JSON with the exact format shown below.
+Do not invent articles, and do not output any extra text.
 
 FORMAT:
 {{
-  "top_articles": [
+  "preference": "{preference}",
+  "article_summaries": [
     {{
       "title": "",
       "source": "",
       "summary": "",
-      "URL": ""
+      "url": ""
     }}
   ]
 }}
 
 ARTICLES:
-{articles}
+{json.dumps(articles, ensure_ascii=False, indent=2)}
 """
 
     response = client.models.generate_content(

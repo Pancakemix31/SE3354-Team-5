@@ -58,14 +58,6 @@ function Navbar() {
           >
             Account
           </NavLink>
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `navbar__link${isActive ? ' navbar__link--active' : ''}`
-            }
-          >
-            Alerts
-          </NavLink>
         </nav>
         <div className="navbar__auth">
           <span className="navbar__user" title={user.email}>
