@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
+import { db } from '../config/firebase';
 import '../styles/featurePages.css';
 import '../pages/SettingsPage.css';
 
@@ -51,9 +53,6 @@ export default function AccountProfilePage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     readStorage(STORAGE_ENABLED) === 'true'
   );
-  const [notificationToast, setNotificationToast] = useState('');
-  const [notificationToastVisible, setNotificationToastVisible] = useState(false);
-  const hideTimer = useRef(null);
 
   function normalizeFrequency(value) {
     if (value === 'hourly') return '1h';
@@ -72,24 +71,29 @@ export default function AccountProfilePage() {
         : DEFAULTS.categories)
     );
     setRegion(user.newsRegion || DEFAULTS.region);
+
+    const syncNotificationSetting = async () => {
+      try {
+        const userSnap = await getDoc(doc(db, 'users', user.uid));
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          if (typeof data.notificationsEnabled === 'boolean') {
+            setNotificationsEnabled(data.notificationsEnabled);
+            writeStorage(STORAGE_ENABLED, data.notificationsEnabled ? 'true' : 'false');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load email notification preference:', error);
+      }
+    };
+
+    syncNotificationSetting();
   }, [user]);
-
-  useEffect(() => {
-    return () => window.clearTimeout(hideTimer.current);
-  }, []);
-
-  const showNotificationToast = (message) => {
-    window.clearTimeout(hideTimer.current);
-    setNotificationToast(message);
-    setNotificationToastVisible(true);
-    hideTimer.current = window.setTimeout(() => setNotificationToastVisible(false), 2800);
-  };
 
   const handleNotificationToggle = (e) => {
     const next = e.target.checked;
     setNotificationsEnabled(next);
     writeStorage(STORAGE_ENABLED, next ? 'true' : 'false');
-    showNotificationToast(next ? 'Notifications enabled.' : 'Notifications disabled.');
   };
 
   function toggleCategory(category) {
@@ -129,6 +133,7 @@ export default function AccountProfilePage() {
       summaryDepth,
       newsCategories: Array.from(selectedCategories),
       newsRegion: region,
+      notificationsEnabled,
     });
     setSaving(false);
 
@@ -253,24 +258,6 @@ export default function AccountProfilePage() {
           <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
             News update notifications will be sent to your email
           </p>
-          {notificationToast && (
-            <div
-              style={{
-                margin: '0.5rem 0',
-                padding: '0.65rem 0.85rem',
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                color: '#2563eb',
-                background: 'rgba(96, 165, 250, 0.1)',
-                border: '1px solid rgba(96, 165, 250, 0.25)',
-                borderRadius: '6px',
-                animation: notificationToastVisible ? 'fadeIn 0.35s ease' : 'none',
-              }}
-              role="status"
-            >
-              {notificationToast}
-            </div>
-          )}
         </div>
         <div className="stack-field">
           <label htmlFor="acct-depth">AI summary depth</label>

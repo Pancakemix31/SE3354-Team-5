@@ -28,7 +28,7 @@ function LoginPage() {
         const to =
           fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
             ? fromPath
-            : '/trending';
+            : '/news';
         navigate(to, { replace: true });
       } else {
         setError(result.error);
@@ -50,7 +50,7 @@ function LoginPage() {
         const to =
           fromPath && fromPath !== '/' && fromPath !== '/login' && fromPath !== '/register'
             ? fromPath
-            : '/trending';
+            : '/news';
         navigate(to, { replace: true });
       } else {
         setError(result.error);

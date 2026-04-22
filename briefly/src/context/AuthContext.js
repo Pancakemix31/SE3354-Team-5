@@ -58,6 +58,7 @@ export function AuthProvider({ children }) {
       name: firebaseUser.displayName || userData.name || '',
       digestFrequency: normalizeFrequency(userData.digestFrequency),
       summaryDepth: userData.summaryDepth || 'concise',
+      notificationsEnabled: userData.notificationsEnabled ?? false,
       notificationFrequency: userData.notificationFrequency || '1d',
       notificationsPaused: userData.notificationsPaused ?? false,
       breakingAlerts: userData.breakingAlerts ?? true,
@@ -99,6 +100,7 @@ export function AuthProvider({ children }) {
         email: email.trim().toLowerCase(),
         digestFrequency: '1d',
         summaryDepth: 'concise',
+        notificationsEnabled: false,
         notificationFrequency: '1d',
         notificationsPaused: false,
         breakingAlerts: true,
@@ -168,6 +170,7 @@ export function AuthProvider({ children }) {
             email: firebaseUser.email || '',
             digestFrequency: '1d',
             summaryDepth: 'concise',
+            notificationsEnabled: false,
             notificationFrequency: '1d',
             notificationsPaused: false,
             breakingAlerts: true,
@@ -216,6 +219,10 @@ export function AuthProvider({ children }) {
 
       if (typeof fields.newsRegion === 'string') {
         updates.newsRegion = fields.newsRegion;
+      }
+
+      if (typeof fields.notificationsEnabled === 'boolean') {
+        updates.notificationsEnabled = fields.notificationsEnabled;
       }
 
       if (Object.keys(updates).length > 0) {

@@ -9,7 +9,7 @@ function HomePage() {
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated) {
-    return <Navigate to="/trending" replace />;
+    return <Navigate to="/news" replace />;
   }
 
   return (

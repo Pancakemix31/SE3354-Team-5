@@ -93,6 +93,10 @@
   transform: translateY(-2px);
 }
 
+.news-card--clickable {
+  cursor: pointer;
+}
+
 .news-card__meta {
   display: flex;
   flex-wrap: wrap;
