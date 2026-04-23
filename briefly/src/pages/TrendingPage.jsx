@@ -180,9 +180,6 @@ function extractNewsApiErrorMessage(apiData) {
   if (errors.every((msg) => msg.includes('ratelimited') || msg.includes('too many requests'))) {
     return 'NewsAPI daily limit reached. Generated briefings will return after quota resets.';
   }
-  if (errors.some((msg) => msg.includes('api key') && msg.includes('invalid'))) {
-    return 'NewsAPI key appears invalid. Update backend NewsAPI_KEY to continue loading briefings.';
-  }
   return '';
 }
 
