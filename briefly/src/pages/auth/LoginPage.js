@@ -107,6 +107,9 @@ function LoginPage() {
         <button type="submit" className="auth-submit" disabled={loading}>
           {loading ? 'Signing in...' : 'Sign in'}
         </button>
+        <p className="auth-divider" aria-hidden="true">
+          <span>or</span>
+        </p>
         <button
           type="button"
           className="auth-google"

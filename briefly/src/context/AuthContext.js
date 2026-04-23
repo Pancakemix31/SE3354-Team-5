@@ -20,7 +20,6 @@ import {
   doc,
   setDoc,
   getDoc,
-  updateDoc,
   deleteDoc,
 } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
@@ -140,6 +139,7 @@ export function AuthProvider({ children }) {
       switch (error.code) {
         case 'auth/user-not-found':
         case 'auth/wrong-password':
+        case 'auth/invalid-credential':
           errorMessage = 'Username or password is incorrect.';
           break;
         case 'auth/invalid-email':
@@ -148,12 +148,21 @@ export function AuthProvider({ children }) {
         case 'auth/user-disabled':
           errorMessage = 'This account has been disabled.';
           break;
+        case 'auth/too-many-requests':
+          errorMessage = 'Too many attempts. Please wait a minute and try again.';
+          break;
+        case 'auth/network-request-failed':
+          errorMessage = 'Network error. Check your connection and try again.';
+          break;
+        case 'permission-denied':
+          errorMessage = 'Signed in, but your profile could not be loaded. Please try again.';
+          break;
         default:
           console.error('Login error:', error);
       }
       return { ok: false, error: errorMessage };
     }
-  }, []);
+  }, [syncUserFromFirebase]);
 
   const signInWithGoogle = useCallback(async () => {
     try {
@@ -188,7 +197,7 @@ export function AuthProvider({ children }) {
       console.error('Google sign-in error:', error);
       return { ok: false, error: 'Unable to sign in with Google. Please try again.' };
     }
-  }, []);
+  }, [syncUserFromFirebase]);
 
   const updateProfile = useCallback(async (fields) => {
     if (!user) {
@@ -226,7 +235,16 @@ export function AuthProvider({ children }) {
       }
 
       if (Object.keys(updates).length > 0) {
-        await updateDoc(doc(db, 'users', user.uid), updates);
+        // Use merge upsert so profile settings can be saved even if the document is missing.
+        await setDoc(
+          doc(db, 'users', user.uid),
+          {
+            email: user.email || '',
+            ...updates,
+            updatedAt: new Date(),
+          },
+          { merge: true }
+        );
         
         // Update local state
         setUser(prev => ({ ...prev, ...updates }));
@@ -245,7 +263,7 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.error('Logout error:', error);
     }
-  }, []);
+  }, [syncUserFromFirebase]);
 
   const deleteAccount = useCallback(async (password) => {
     if (!user) {

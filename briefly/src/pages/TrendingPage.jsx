@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSavedArticles } from '../context/SavedArticlesContext';
 import { loadRatings, saveRating } from '../lib/articleRatingsStorage';
 import {
   loadGeneratedArticles,
@@ -13,6 +14,26 @@ import {
 import '../styles/featurePages.css';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://127.0.0.1:8000';
+const FALLBACK_DIGEST_FREQUENCY = '1d';
+
+const TOPIC_BANNER_IMAGES = {
+  world: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c?auto=format&fit=crop&w=1400&q=80',
+  politics: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1400&q=80',
+  technology: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80',
+  science: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1400&q=80',
+  finance: 'https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1400&q=80',
+  business: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80',
+  sports: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1400&q=80',
+  health: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1400&q=80',
+  entertainment: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=80',
+  culture: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1400&q=80',
+  travel: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1400&q=80',
+  environment: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1400&q=80',
+  ai: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=80',
+  cybersecurity: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1400&q=80',
+  education: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1400&q=80',
+  climate: 'https://images.unsplash.com/photo-1569163139394-de44cb5894cf?auto=format&fit=crop&w=1400&q=80',
+};
 
 function slugify(input) {
   return String(input || '')
@@ -27,7 +48,16 @@ function capitalize(value) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-function mergeBriefings(existing, incoming) {
+function buildTopicImage(topic) {
+  const normalized = slugify(topic);
+  if (TOPIC_BANNER_IMAGES[normalized]) return TOPIC_BANNER_IMAGES[normalized];
+  const partial = Object.keys(TOPIC_BANNER_IMAGES).find((key) => normalized.includes(key));
+  return partial ? TOPIC_BANNER_IMAGES[partial] : TOPIC_BANNER_IMAGES.world;
+}
+
+function mergeBriefings(existing, incoming, options = {}) {
+  const { keepOnlyIncomingIds = false } = options;
+  const incomingIds = new Set((incoming || []).map((a) => a?.id).filter(Boolean));
   const map = new Map();
   (existing || []).forEach((a) => {
     if (a?.id) map.set(a.id, { ...a });
@@ -40,13 +70,38 @@ function mergeBriefings(existing, incoming) {
       createdAt: prev?.createdAt ?? a.createdAt ?? Date.now(),
     });
   });
-  return Array.from(map.values()).sort((x, y) => (x.createdAt || 0) - (y.createdAt || 0));
+  const values = Array.from(map.values());
+  const filtered = keepOnlyIncomingIds
+    ? values.filter((item) => incomingIds.has(item?.id))
+    : values;
+  return filtered.sort((x, y) => (x.createdAt || 0) - (y.createdAt || 0));
+}
+
+function digestFrequencyToMs(value) {
+  const normalized = String(value || FALLBACK_DIGEST_FREQUENCY).toLowerCase();
+  switch (normalized) {
+    case '30m':
+      return 30 * 60 * 1000;
+    case '1h':
+    case 'hourly':
+      return 60 * 60 * 1000;
+    case '6h':
+      return 6 * 60 * 60 * 1000;
+    case '12h':
+      return 12 * 60 * 60 * 1000;
+    case '1d':
+    case 'daily':
+      return 24 * 60 * 60 * 1000;
+    default:
+      return 24 * 60 * 60 * 1000;
+  }
 }
 
 function mapGeneratedArticles(apiData) {
   if (!apiData || !Array.isArray(apiData.preference_summaries)) return [];
   return apiData.preference_summaries.flatMap((prefSummary) => {
     const preference = prefSummary?.preference || 'general';
+    const region = prefSummary?.region || apiData?.region || 'Global';
     let summaryItems = prefSummary?.summary?.article_summaries;
     if (!Array.isArray(summaryItems) || summaryItems.length === 0) {
       const raw = prefSummary?.summary?.raw_summary;
@@ -92,6 +147,7 @@ function mapGeneratedArticles(apiData) {
       })
       .join('\n\n');
     const firstUrl = cleanItems.find((item) => item?.url)?.url || '';
+    const image = buildTopicImage(preference);
 
     return [{
       id,
@@ -99,23 +155,47 @@ function mapGeneratedArticles(apiData) {
       source: `${cleanItems.length} summarized sources`,
       excerpt: excerpt || 'A generated multi-story briefing is available.',
       body: combinedBody,
+      aiSummary: cleanItems
+        .slice(0, 3)
+        .map((item) => item?.summary || '')
+        .filter(Boolean)
+        .join(' '),
       url: firstUrl,
+      image,
       category: capitalize(preference),
-      region: 'Global',
+      region,
       momentum: 'Generated',
       createdAt: Date.now(),
     }];
   });
 }
 
+function extractNewsApiErrorMessage(apiData) {
+  const summaries = Array.isArray(apiData?.preference_summaries) ? apiData.preference_summaries : [];
+  const errors = summaries
+    .map((entry) => String(entry?.summary?.error || '').toLowerCase())
+    .filter(Boolean);
+  if (errors.length === 0) return '';
+
+  if (errors.every((msg) => msg.includes('ratelimited') || msg.includes('too many requests'))) {
+    return 'NewsAPI daily limit reached. Generated briefings will return after quota resets.';
+  }
+  if (errors.some((msg) => msg.includes('api key') && msg.includes('invalid'))) {
+    return 'NewsAPI key appears invalid. Update backend NewsAPI_KEY to continue loading briefings.';
+  }
+  return '';
+}
+
 export default function TrendingPage() {
   const { user } = useAuth();
+  const { saveArticle, isSaved } = useSavedArticles();
   const navigate = useNavigate();
   const [toast, setToast] = useState('');
   const [ratings, setRatings] = useState({});
   const [articles, setArticles] = useState([]);
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
   const toastTimer = useRef(null);
 
   useEffect(() => {
@@ -124,10 +204,14 @@ export default function TrendingPage() {
 
   useEffect(() => {
     let cancelled = false;
-    const controller = new AbortController();
+    let activeController = null;
+    let refreshTimer = null;
+    let inFlight = false;
 
-    async function loadArticles() {
-      setLoadingArticles(true);
+    async function loadArticles({ background = false } = {}) {
+      if (inFlight) return;
+      inFlight = true;
+      if (!background) setLoadingArticles(true);
       setLoadError('');
 
       let persisted = [];
@@ -143,17 +227,29 @@ export default function TrendingPage() {
       }
 
       try {
+        if (activeController) {
+          activeController.abort();
+        }
+        activeController = new AbortController();
         const preferredTopics = Array.isArray(user?.newsCategories) && user.newsCategories.length > 0
           ? user.newsCategories.map((t) => String(t).toLowerCase())
           : ['technology', 'world'];
+        const preferredRegion = typeof user?.newsRegion === 'string' && user.newsRegion.trim()
+          ? user.newsRegion
+          : 'Global';
+        const summaryDepth = user?.summaryDepth === 'deep' ? 'deep' : 'concise';
 
         const response = await fetch(`${API_BASE_URL}/api/v1/news-summary`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ preferences: preferredTopics }),
-          signal: controller.signal,
+          body: JSON.stringify({
+            preferences: preferredTopics,
+            region: preferredRegion,
+            summary_depth: summaryDepth,
+          }),
+          signal: activeController.signal,
         });
 
         if (!response.ok) {
@@ -161,8 +257,9 @@ export default function TrendingPage() {
         }
 
         const payload = await response.json();
+        const apiErrorMessage = extractNewsApiErrorMessage(payload);
         const generated = mapGeneratedArticles(payload);
-        const merged = mergeBriefings(persisted, generated);
+        const merged = mergeBriefings(persisted, generated, { keepOnlyIncomingIds: true });
 
         if (cancelled) return;
         setArticles(merged);
@@ -171,8 +268,11 @@ export default function TrendingPage() {
         if (user?.uid && merged.length > 0) {
           await saveGeneratedNewsArticles(user.uid, merged);
         }
+        setLastUpdatedAt(Date.now());
 
-        if (generated.length === 0 && merged.length === 0) {
+        if (apiErrorMessage) {
+          setLoadError(apiErrorMessage);
+        } else if (generated.length === 0 && merged.length === 0) {
           setLoadError('No generated articles were returned.');
         }
       } catch (error) {
@@ -181,17 +281,23 @@ export default function TrendingPage() {
           setLoadError('Unable to load new articles. Showing saved briefings if any.');
         }
       } finally {
-        if (!cancelled) setLoadingArticles(false);
+        inFlight = false;
+        if (!cancelled && !background) setLoadingArticles(false);
       }
     }
 
     loadArticles();
+    const intervalMs = digestFrequencyToMs(user?.digestFrequency);
+    refreshTimer = window.setInterval(() => {
+      loadArticles({ background: true });
+    }, intervalMs);
 
     return () => {
       cancelled = true;
-      controller.abort();
+      if (activeController) activeController.abort();
+      if (refreshTimer) window.clearInterval(refreshTimer);
     };
-  }, [user?.uid, user?.newsCategories]);
+  }, [user?.uid, user?.newsCategories, user?.newsRegion, user?.summaryDepth, user?.digestFrequency]);
 
   function showToast(msg) {
     setToast(msg);
@@ -208,6 +314,38 @@ export default function TrendingPage() {
 
   function openArticle(article) {
     navigate(`/news/${article.id}`, { state: { article } });
+  }
+
+  function onSaveArticle(article) {
+    const result = saveArticle(article);
+    if (result.needAuth) {
+      navigate('/login', {
+        state: {
+          from: { pathname: '/news' },
+          message: 'Sign in to save news articles.',
+        },
+      });
+      return;
+    }
+    if (result.duplicate) {
+      showToast('This article is already in your saved list.');
+      return;
+    }
+    if (result.queued) {
+      showToast('You appear to be offline. Save is queued for when you reconnect.');
+      return;
+    }
+    if (result.ok) {
+      showToast('Article saved.');
+      return;
+    }
+    if (result.error) {
+      showToast(result.error);
+    }
+  }
+
+  function openAiSummary(article) {
+    navigate('/summary', { state: { article } });
   }
 
   return (
@@ -233,6 +371,11 @@ export default function TrendingPage() {
           {loadError}
         </p>
       ) : null}
+      {lastUpdatedAt ? (
+        <p className="feature-toast" role="status">
+          Last refreshed: {new Date(lastUpdatedAt).toLocaleTimeString()}
+        </p>
+      ) : null}
       {!loadingArticles && !loadError && articles.length === 0 ? (
         <p className="feature-toast" role="status">
           No generated briefings available yet.
@@ -255,6 +398,18 @@ export default function TrendingPage() {
                 }
               }}
             >
+              <div className="news-card__media-wrap">
+                <img
+                  src={a.image || buildTopicImage(a.category)}
+                  alt={`${a.category || 'News'} topic`}
+                  className="news-card__media"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = buildTopicImage(a.category);
+                  }}
+                />
+              </div>
               <div className="news-card__meta">
                 <span className="news-card__badge">{a.momentum}</span>
                 <span>{a.region}</span>
@@ -279,6 +434,30 @@ export default function TrendingPage() {
                     ★
                   </button>
                 ))}
+              </div>
+              <div className="news-card__actions">
+                <button
+                  type="button"
+                  className="news-card__summary-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openAiSummary(a);
+                  }}
+                >
+                  AI summary
+                </button>
+                <button
+                  type="button"
+                  className="news-card__save-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSaveArticle(a);
+                  }}
+                  disabled={isSaved(a.id)}
+                  aria-pressed={isSaved(a.id)}
+                >
+                  {isSaved(a.id) ? 'Saved' : 'Save article'}
+                </button>
               </div>
             </article>
           );

@@ -131,6 +131,7 @@ function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="8+ characters"
           />
+          <p className="auth-help">Use at least 8 characters with letters, numbers, and a symbol.</p>
         </div>
         <div className="auth-field">
           <label htmlFor="reg-confirm">Confirm password</label>
@@ -147,6 +148,9 @@ function RegisterPage() {
         <button type="submit" className="auth-submit" disabled={loading}>
           {loading ? 'Creating account...' : 'Create account'}
         </button>
+        <p className="auth-divider" aria-hidden="true">
+          <span>or</span>
+        </p>
         <button
           type="button"
           className="auth-google"

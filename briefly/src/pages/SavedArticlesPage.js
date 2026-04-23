@@ -54,7 +54,7 @@ function SavedArticlesPage() {
         <div className="saved-page__empty">
           <p>No saved articles yet.</p>
           <p className="saved-page__empty-hint">
-            Open <Link to="/summary">AI Summary</Link> and use <strong>Save article</strong> on a
+            Open <Link to="/summary">Featured News</Link> and use <strong>Save article</strong> on a
             story you want to keep.
           </p>
         </div>

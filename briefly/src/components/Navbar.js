@@ -32,7 +32,7 @@ function Navbar() {
               `navbar__link${isActive ? ' navbar__link--active' : ''}`
             }
           >
-            AI Summary
+            Featured News
           </NavLink>
           <NavLink
             to="/saved"
