@@ -17,6 +17,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -94,15 +95,28 @@ function LoginPage() {
         </div>
         <div className="auth-field">
           <label htmlFor="login-password">Password</label>
-          <input
-            id="login-password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="auth-password-input">
+            <input
+              id="login-password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="auth-password-toggle"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-pressed={showPassword}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 5c5.2 0 9.4 3.8 10.8 6.4a1.2 1.2 0 010 1.2C21.4 15.2 17.2 19 12 19S2.6 15.2 1.2 12.6a1.2 1.2 0 010-1.2C2.6 8.8 6.8 5 12 5zm0 2C8.1 7 4.8 9.7 3.5 12c1.3 2.3 4.6 5 8.5 5s7.2-2.7 8.5-5c-1.3-2.3-4.6-5-8.5-5zm0 2.3A2.7 2.7 0 1112 14.7a2.7 2.7 0 010-5.4z" />
+              </svg>
+            </button>
+          </div>
         </div>
         <button type="submit" className="auth-submit" disabled={loading}>
           {loading ? 'Signing in...' : 'Sign in'}
