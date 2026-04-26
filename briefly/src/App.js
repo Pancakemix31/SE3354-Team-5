@@ -14,6 +14,7 @@ import NewsArticlePage from './pages/NewsArticlePage';
 import AccountProfilePage from './pages/AccountProfilePage';
 import LoginPage from './pages/auth/LoginPage.js';
 import RegisterPage from './pages/auth/RegisterPage.js';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx';
 import './App.css';
 
 /**
@@ -35,6 +36,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
 
               <Route element={<RequireAuth />}>
                 <Route element={<MainLayout />}>

@@ -14,6 +14,7 @@ import {
   onAuthStateChanged,
   deleteUser,
   updateProfile as updateFirebaseProfile,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
 } from 'firebase/auth';
 import {
@@ -301,6 +302,21 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+  const resetPassword = useCallback(async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { ok: true };
+    } catch (error) {
+      let errorMessage = 'Failed to send reset email.';
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No account found with that email address.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Please enter a valid email address.';
+      }
+      return { ok: false, error: errorMessage };
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -312,8 +328,9 @@ export function AuthProvider({ children }) {
       logout,
       deleteAccount,
       updateProfile,
+      resetPassword,
     }),
-    [user, loading, login, register, signInWithGoogle, logout, deleteAccount, updateProfile]
+    [user, loading, login, register, signInWithGoogle, logout, deleteAccount, updateProfile, resetPassword]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

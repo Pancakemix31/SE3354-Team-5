@@ -134,6 +134,8 @@ function LoginPage() {
         </button>
       </form>
       <p className="auth-switch">
+        <Link to="/reset-password">Forgot password?</Link>
+        {' · '}
         New here? <Link to="/register">Create an account</Link>
       </p>
     </AuthLayout>

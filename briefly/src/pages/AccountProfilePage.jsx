@@ -380,6 +380,12 @@ export default function AccountProfilePage() {
 
       <section className="pref-section pref-section--danger">
         <h2>Danger zone</h2>
+        <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+          <Link to="/reset-password" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>
+            Reset your password
+          </Link>
+          {' '}— sends a reset link to your email.
+        </p>
         <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
           Permanently remove your account and all saved data. This cannot be undone.
         </p>

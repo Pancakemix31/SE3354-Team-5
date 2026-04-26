@@ -1,34 +1,61 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import AuthLayout from './AuthLayout';
+import { useAuth } from '../../context/AuthContext';
 
-/** Password reset via email — integrate Firebase sendPasswordResetEmail. */
 export default function ResetPasswordPage() {
+  const { resetPassword } = useAuth();
+  const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSent(true);
+    setError('');
+    setLoading(true);
+    const result = await resetPassword(email);
+    setLoading(false);
+    if (result.ok) {
+      setSent(true);
+    } else {
+      setError(result.error);
+    }
   }
 
   return (
-    <>
-      <h1 className="auth-page__title">Reset password</h1>
+    <AuthLayout title="Reset password" subtitle="We'll send a reset link to your email address.">
       {sent ? (
-        <p className="auth-page__message">Check your email for a reset link (placeholder).</p>
+        <p className="auth-info" role="status">
+          Check your inbox — a reset link is on its way.
+        </p>
       ) : (
-        <form className="auth-page__form" onSubmit={handleSubmit}>
-          <label className="auth-page__label">
-            Email
-            <input className="auth-page__input" type="email" required />
-          </label>
-          <button type="submit" className="auth-page__submit">
-            Send link
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          {error ? (
+            <p className="auth-error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <div className="auth-field">
+            <label htmlFor="reset-email">Email</label>
+            <input
+              id="reset-email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+          <button type="submit" className="auth-submit" disabled={loading}>
+            {loading ? 'Sending...' : 'Send reset link'}
           </button>
         </form>
       )}
-      <p className="auth-page__footer">
+      <p className="auth-switch">
         <Link to="/login">Back to log in</Link>
       </p>
-    </>
+    </AuthLayout>
   );
 }
