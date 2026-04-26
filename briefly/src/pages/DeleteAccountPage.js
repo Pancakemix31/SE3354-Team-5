@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './DeleteAccountPage.css';
 
@@ -97,6 +97,10 @@ function DeleteAccountPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <p className="delete-modal__reset-hint">
+                Forgot your password?{' '}
+                <Link to="/reset-password" onClick={closeModal}>Reset it instead</Link>
+              </p>
               <div className="delete-modal__actions">
                 <button type="button" className="delete-modal__btn delete-modal__btn--ghost" onClick={closeModal}>
                   Cancel

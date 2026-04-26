@@ -134,6 +134,22 @@
   border-radius: var(--radius-sm);
 }
 
+.delete-modal__reset-hint {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.delete-modal__reset-hint a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.delete-modal__reset-hint a:hover {
+  text-decoration: underline;
+}
+
 .delete-modal__actions {
   display: flex;
   flex-wrap: wrap;
