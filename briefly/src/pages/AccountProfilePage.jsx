@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
@@ -108,7 +108,6 @@ export default function AccountProfilePage() {
   function handleAddCustomTopic() {
     const trimmed = customTopic.trim();
     if (!trimmed) return;
-    
     setSelectedCategories((prev) => new Set([...prev, trimmed]));
     setCustomTopic('');
     setShowAddModal(false);
@@ -147,20 +146,16 @@ export default function AccountProfilePage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="feature-page">
-        <header className="feature-page__header">
+      <div className="settings-page">
+        <header className="settings-page__intro">
           <h1>Account</h1>
-          <p>Update how you appear and how deep your AI briefings go.</p>
+          <p>Sign in to manage your profile and preferences.</p>
         </header>
         <div className="feature-page__gate">
           <p>Sign in to manage your account preferences.</p>
           <div className="feature-page__gate-actions">
-            <Link className="home__btn home__btn--primary" to="/login">
-              Sign in
-            </Link>
-            <Link className="home__btn home__btn--secondary" to="/register">
-              Register
-            </Link>
+            <Link className="home__btn home__btn--primary" to="/login">Sign in</Link>
+            <Link className="home__btn home__btn--secondary" to="/register">Register</Link>
           </div>
         </div>
       </div>
@@ -168,226 +163,251 @@ export default function AccountProfilePage() {
   }
 
   return (
-    <div className="feature-page">
-      <header className="feature-page__header">
-        <h1>Account preferences</h1>
-        <p>Update your display name, digest cadence, summary depth, and news topics from one page.</p>
+    <div className="settings-page">
+      <header className="settings-page__intro">
+        <h1>Account</h1>
+        <p>Manage your profile, digest preferences, and notification settings.</p>
       </header>
-      {toast ? (
-        <p className="feature-toast" role="status">
-          {toast}
-        </p>
-      ) : null}
-      <form className="pref-section" onSubmit={handleSubmit}>
-        <div className="stack-field">
-          <label htmlFor="acct-name">Display name</label>
-          <input
-            id="acct-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoComplete="name"
-          />
-        </div>
-        <div className="stack-field">
-          <label htmlFor="acct-email">Email</label>
-          <input id="acct-email" value={user.email} readOnly />
-        </div>
-        <div className="stack-field">
-          <label htmlFor="acct-digest">Digest frequency</label>
-          <select
-            id="acct-digest"
-            value={digestFrequency}
-            onChange={(e) => setDigestFrequency(e.target.value)}
-          >
-            <option value="30m">Every 30 minutes</option>
-            <option value="1h">Every 1 hour</option>
-            <option value="6h">Every 6 hours</option>
-            <option value="12h">Every 12 hours</option>
-            <option value="1d">Every 1 day</option>
-          </select>
-        </div>
-        <div className="stack-field">
-          <label>Email notifications</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-            <label
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-                gap: '0.5rem',
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={notificationsEnabled}
-                onChange={handleNotificationToggle}
-                style={{ display: 'none' }}
-              />
-              <span
-                style={{
-                  position: 'relative',
-                  display: 'inline-block',
-                  width: '52px',
-                  height: '28px',
-                  background: notificationsEnabled ? '#10b981' : '#e5e7eb',
-                  borderRadius: '14px',
-                  transition: 'background 0.25s ease',
-                  cursor: 'pointer',
-                }}
-              >
-                <span
-                  style={{
-                    content: '""',
-                    position: 'absolute',
-                    height: '22px',
-                    width: '22px',
-                    left: notificationsEnabled ? '27px' : '3px',
-                    bottom: '3px',
-                    background: '#f1f5f9',
-                    borderRadius: '50%',
-                    transition: 'left 0.25s ease',
-                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
-                  }}
-                />
-              </span>
-              <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>
-                {notificationsEnabled ? 'On' : 'Off'}
-              </span>
-            </label>
-          </div>
-          <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>
-            News update notifications will be sent to your email
-          </p>
-        </div>
-        <div className="stack-field">
-          <label htmlFor="acct-depth">AI summary depth</label>
-          <select
-            id="acct-depth"
-            value={summaryDepth}
-            onChange={(e) => setSummaryDepth(e.target.value)}
-          >
-            <option value="concise">Concise — headline + 3 bullets</option>
-            <option value="deep">Deep — context, risks, and sources</option>
-          </select>
-        </div>
-        <section className="pref-section">
-          <h2>News topics</h2>
-          <p>Pick the categories you want Briefly to prioritize.</p>
-          <div className="chip-row">
-            {CATEGORIES.map((category) => (
-              <button
-                key={category}
-                type="button"
-                className={`chip${selectedCategories.has(category) ? ' chip--on' : ''}`}
-                onClick={() => toggleCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="chip chip--add"
-              onClick={() => setShowAddModal(true)}
-              title="Add custom topic"
-            >
-              Add +
-            </button>
-          </div>
-          {Array.from(selectedCategories)
-            .filter((cat) => !CATEGORIES.includes(cat))
-            .length > 0 && (
-            <div className="custom-topics">
-              <h3>Custom topics</h3>
-              <div className="chip-row">
-                {Array.from(selectedCategories)
-                  .filter((cat) => !CATEGORIES.includes(cat))
-                  .map((customCat) => (
-                    <div key={customCat} className="chip chip--custom">
-                      {customCat}
-                      <button
-                        type="button"
-                        className="chip__remove"
-                        onClick={() => handleRemoveCustomTopic(customCat)}
-                        aria-label={`Remove ${customCat}`}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-          {showAddModal && (
-            <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h3>Add custom topic</h3>
-                <input
-                  type="text"
-                  className="modal-input"
-                  placeholder="e.g., Cryptocurrency, Space, Gaming"
-                  value={customTopic}
-                  onChange={(e) => setCustomTopic(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') handleAddCustomTopic();
-                  }}
-                  autoFocus
-                />
-                <div className="modal-actions">
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => {
-                      setShowAddModal(false);
-                      setCustomTopic('');
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    onClick={handleAddCustomTopic}
-                    disabled={!customTopic.trim()}
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </section>
-        <section className="pref-section">
-          <h2>Region focus</h2>
-          <div className="stack-field">
-            <label htmlFor="acct-region">Primary region</label>
-            <select
-              id="acct-region"
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-            >
-              {REGIONS.map((regionOption) => (
-                <option key={regionOption} value={regionOption}>
-                  {regionOption}
-                </option>
-              ))}
-            </select>
-          </div>
-        </section>
-        <button type="submit" className="btn-primary" disabled={selectedCategories.size === 0 || saving}>
-          {saving ? 'Saving...' : 'Save account preferences'}
-        </button>
-      </form>
 
-      <section className="pref-section pref-section--danger">
-        <h2>Danger zone</h2>
-        <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
-          Permanently remove your account and all saved data. This cannot be undone.
-        </p>
-        <Link to="/account/delete" className="btn-danger" style={{ display: 'inline-block', textDecoration: 'none' }}>
-          Delete account
-        </Link>
-      </section>
+      {toast ? <p className="feature-toast" role="status">{toast}</p> : null}
+
+      <div className="settings-layout">
+        <aside className="settings-sidebar" aria-label="Sections">
+          <h2>Account</h2>
+          <ul className="settings-sidebar__nav">
+            <li>
+              <a href="#profile" className="settings-sidebar__link">Profile</a>
+            </li>
+            <li>
+              <a href="#preferences" className="settings-sidebar__link">Preferences</a>
+            </li>
+            <li>
+              <a href="#notifications" className="settings-sidebar__link">Notifications</a>
+            </li>
+            <li>
+              <NavLink
+                to="/saved"
+                className={({ isActive }) =>
+                  `settings-sidebar__link${isActive ? ' is-active' : ''}`
+                }
+              >
+                Saved articles
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/account/delete"
+                className={({ isActive }) =>
+                  `settings-sidebar__link${isActive ? ' is-active' : ''}`
+                }
+              >
+                Delete account
+              </NavLink>
+            </li>
+          </ul>
+        </aside>
+
+        <form onSubmit={handleSubmit}>
+          <section className="settings-panel" id="profile" aria-labelledby="profile-heading" style={{ marginBottom: '1.25rem', scrollMarginTop: '80px' }}>
+            <h2 id="profile-heading">Profile</h2>
+            <p className="settings-panel__desc">Your display name and email address.</p>
+            <div className="stack-field">
+              <label htmlFor="acct-name">Display name</label>
+              <input
+                id="acct-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+              />
+            </div>
+            <div className="stack-field">
+              <label htmlFor="acct-email">Email</label>
+              <input id="acct-email" value={user.email} readOnly />
+            </div>
+          </section>
+
+          <section className="settings-panel" id="preferences" aria-labelledby="prefs-heading" style={{ marginBottom: '1.25rem', scrollMarginTop: '80px' }}>
+            <h2 id="prefs-heading">Preferences</h2>
+            <p className="settings-panel__desc">Control your digest cadence, summary depth, news topics, and region.</p>
+
+            <div className="setting-row">
+              <div>
+                <label className="setting-row__label" htmlFor="acct-digest">Digest frequency</label>
+                <p className="setting-row__help">How often we summarize activity into a single update.</p>
+              </div>
+              <select
+                id="acct-digest"
+                className="frequency-select"
+                value={digestFrequency}
+                onChange={(e) => setDigestFrequency(e.target.value)}
+              >
+                <option value="30m">Every 30 minutes</option>
+                <option value="1h">Every 1 hour</option>
+                <option value="6h">Every 6 hours</option>
+                <option value="12h">Every 12 hours</option>
+                <option value="1d">Every 1 day</option>
+              </select>
+            </div>
+
+            <div className="setting-row">
+              <div>
+                <label className="setting-row__label" htmlFor="acct-depth">AI summary depth</label>
+                <p className="setting-row__help">How detailed the AI briefings should be.</p>
+              </div>
+              <select
+                id="acct-depth"
+                className="frequency-select"
+                value={summaryDepth}
+                onChange={(e) => setSummaryDepth(e.target.value)}
+              >
+                <option value="concise">Concise — headline + 3 bullets</option>
+                <option value="deep">Deep — context, risks, and sources</option>
+              </select>
+            </div>
+
+            <div className="setting-row setting-row--stack">
+              <div>
+                <span className="setting-row__label">News topics</span>
+                <p className="setting-row__help">Pick the categories you want Briefly to prioritize.</p>
+              </div>
+              <div className="chip-row" style={{ marginTop: '0.65rem' }}>
+                {CATEGORIES.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    className={`chip${selectedCategories.has(category) ? ' chip--on' : ''}`}
+                    onClick={() => toggleCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="chip chip--add"
+                  onClick={() => setShowAddModal(true)}
+                  title="Add custom topic"
+                >
+                  Add +
+                </button>
+              </div>
+              {Array.from(selectedCategories).filter((cat) => !CATEGORIES.includes(cat)).length > 0 && (
+                <div className="custom-topics" style={{ marginTop: '0.65rem' }}>
+                  <div className="chip-row">
+                    {Array.from(selectedCategories)
+                      .filter((cat) => !CATEGORIES.includes(cat))
+                      .map((customCat) => (
+                        <div key={customCat} className="chip chip--custom">
+                          {customCat}
+                          <button
+                            type="button"
+                            className="chip__remove"
+                            onClick={() => handleRemoveCustomTopic(customCat)}
+                            aria-label={`Remove ${customCat}`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="setting-row setting-row--stack">
+              <div>
+                <label className="setting-row__label" htmlFor="acct-region">Primary region</label>
+                <p className="setting-row__help">Focus your feed on a specific part of the world.</p>
+              </div>
+              <select
+                id="acct-region"
+                className="frequency-select"
+                value={region}
+                onChange={(e) => setRegion(e.target.value)}
+              >
+                {REGIONS.map((regionOption) => (
+                  <option key={regionOption} value={regionOption}>{regionOption}</option>
+                ))}
+              </select>
+            </div>
+          </section>
+
+          <section className="settings-panel" id="notifications" aria-labelledby="notif-heading" style={{ marginBottom: '1.25rem', scrollMarginTop: '80px' }}>
+            <h2 id="notif-heading">Notifications</h2>
+            <p className="settings-panel__desc">Turn alerts on or off and choose how often we bundle updates.</p>
+            <div className="setting-row">
+              <div>
+                <span className="setting-row__label" id="notif-toggle-label">Email notifications</span>
+                <p className="setting-row__help">When enabled, news update notifications will be sent to your email.</p>
+              </div>
+              <div className="toggle">
+                <span className="toggle__state" aria-live="polite">{notificationsEnabled ? 'ON' : 'OFF'}</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={notificationsEnabled}
+                    onChange={handleNotificationToggle}
+                    aria-labelledby="notif-toggle-label"
+                  />
+                  <span className="switch__slider" />
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={selectedCategories.size === 0 || saving}
+            style={{ marginBottom: '1.25rem' }}
+          >
+            {saving ? 'Saving...' : 'Save preferences'}
+          </button>
+
+          <section className="pref-section pref-section--danger">
+            <h2>Danger zone</h2>
+            <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+              Permanently remove your account and all saved data. This cannot be undone.
+            </p>
+            <Link to="/account/delete" className="btn-danger" style={{ display: 'inline-block', textDecoration: 'none' }}>
+              Delete account
+            </Link>
+          </section>
+        </form>
+      </div>
+
+      {showAddModal && (
+        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Add custom topic</h3>
+            <input
+              type="text"
+              className="modal-input"
+              placeholder="e.g., Cryptocurrency, Space, Gaming"
+              value={customTopic}
+              onChange={(e) => setCustomTopic(e.target.value)}
+              onKeyPress={(e) => { if (e.key === 'Enter') handleAddCustomTopic(); }}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => { setShowAddModal(false); setCustomTopic(''); }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleAddCustomTopic}
+                disabled={!customTopic.trim()}
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-

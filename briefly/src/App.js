@@ -6,7 +6,6 @@ import MainLayout from './layouts/MainLayout';
 import RequireAuth from './layouts/RequireAuth';
 import HomePage from './pages/HomePage';
 import SummaryPage from './pages/SummaryPage';
-import SettingsPage from './pages/SettingsPage';
 import SavedArticlesPage from './pages/SavedArticlesPage';
 import DeleteAccountPage from './pages/DeleteAccountPage';
 import TrendingPage from './pages/TrendingPage';
@@ -46,7 +45,6 @@ function App() {
                   <Route path="/profile" element={<AccountProfilePage />} />
                   <Route path="/summary" element={<SummaryPage />} />
                   <Route path="/saved" element={<SavedArticlesPage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/account/delete" element={<DeleteAccountPage />} />
                 </Route>
               </Route>
