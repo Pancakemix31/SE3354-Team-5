@@ -385,6 +385,31 @@
   color: var(--color-text-muted);
 }
 
+.pref-section--danger {
+  border-color: #fca5a5;
+  background: #fff5f5;
+}
+
+.pref-section--danger h2 {
+  color: #dc2626;
+}
+
+.btn-danger {
+  padding: 0.55rem 1.15rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #dc2626;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
 .stack-field {
   display: flex;
   flex-direction: column;

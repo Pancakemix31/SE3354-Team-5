@@ -377,6 +377,16 @@ export default function AccountProfilePage() {
           {saving ? 'Saving...' : 'Save account preferences'}
         </button>
       </form>
+
+      <section className="pref-section pref-section--danger">
+        <h2>Danger zone</h2>
+        <p style={{ fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+          Permanently remove your account and all saved data. This cannot be undone.
+        </p>
+        <Link to="/account/delete" className="btn-danger" style={{ display: 'inline-block', textDecoration: 'none' }}>
+          Delete account
+        </Link>
+      </section>
     </div>
   );
 }
